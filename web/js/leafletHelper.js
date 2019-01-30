@@ -59,7 +59,8 @@
                             "name": "Claud H. B. Bland",
                             "amenity": "Buried Human",
                             "popupContent": "This is Claud, he is dead",
-                            "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
+                            "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e",
+                            "cemProjLink" : "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
                         },
                         "geometry": {
                             "type": "Point",
@@ -73,7 +74,8 @@
                             "name": "Elizabeth C. Carr",
                             "amenity": "Buried Human",
                             "popupContent": "This is Elizabeth, she is a stationary zombie",
-                            "openDataID" : "http://devstore.rerum.io/v1/id/5bc8075ae4b09992fca2221f"
+                            "openDataID" : "http://devstore.rerum.io/v1/id/5bc8075ae4b09992fca2221f",
+                            "cemProjLink": "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc8075ae4b09992fca2221f"
                         },
                         "geometry": {
                             "type": "Point",
@@ -81,6 +83,21 @@
                         },
                         "type": "Feature",
                         id:2
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "McElwee Cemetery",
+                            "amenity": "Human Cemetery",
+                            "popupContent": "This is where our people are buried!",
+                            "openDataID" : "http://devstore.rerum.io/v1/id/5c100ecce4b05b14fb531ed0",
+                            "cemProjLink": "http://cemetery.rerum.io/mcelwee/main.html"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [-91.145024, 39.406347]
+                        },
+                        id:3
                     }
                 ]
             }
@@ -103,7 +120,7 @@
         }
         
         function onEachFeature(feature, layer) {
-            var popupContent = "<p>Person's Linked Open Data ID: <a target='_blank' href='"+feature.properties.openDataID+"'>"+feature.properties.openDataID+"</a></p>";
+            var popupContent = "<p>Person's Cemetery Project Lin k: <a target='_blank' href='"+feature.properties.cemProjLink+"'>"+feature.properties.cemProjLink+"</a></p>";
             if (feature.properties && feature.properties.popupContent) {
                 popupContent += feature.properties.popupContent;
             }
