@@ -64,7 +64,7 @@
                         },
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [-91.145024, 39.406347]
+                            "coordinates": [-91.150088, 39.40209]
                         },
                         "type": "Feature",
                         id:1
@@ -79,7 +79,7 @@
                         },
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [-91.145024, 39.4068]
+                            "coordinates": [-91.149584, 39.402057]
                         },
                         "type": "Feature",
                         id:2
@@ -95,9 +95,24 @@
                         },
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [-91.145024, 39.406347]
+                            "coordinates": [-91.148769,39.402507]
                         },
                         id:3
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "name": "McElwee Cemetery Zombie Housing",
+                            "amenity": "Zombies!",
+                            "popupContent": "Zombies can find affordable home rentals here",
+                            "openDataID" : "",
+                            "cemProjLink": ""
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [-91.145743, 39.408051]
+                        },
+                        id:5
                     }
                 ]
             }
@@ -120,9 +135,13 @@
         }
         
         function onEachFeature(feature, layer) {
-            var popupContent = "<p>Person's Cemetery Project Lin k: <a target='_blank' href='"+feature.properties.cemProjLink+"'>"+feature.properties.cemProjLink+"</a></p>";
+            let featureText = feature.properties.cemProjLink
+            let popupContent = ""
+            if(featureText){
+                popupContent += "<p> <a target='_blank' href='"+featureText+"'>Cemetery Project Link</a></p>";
+            }
             if (feature.properties && feature.properties.popupContent) {
-                popupContent += feature.properties.popupContent;
+                popupContent += feature.properties.popupContent
             }
             layer.bindPopup(popupContent);
 	}
