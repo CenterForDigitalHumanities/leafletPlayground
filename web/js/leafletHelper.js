@@ -4,54 +4,84 @@
  * and open the template in the editor.
  */
 
-
-        let popup = L.popup();
+        let leafy = {}
         
-        function initializeMap(){
+        
+        leafy.mymap = ""
+        leafy.util = {}
+        leafy.err = {}
+        
+        leafy.err.handleHTTPError = function(response){
+            if (!response.ok){
+                let status = response.status;
+                switch(status){
+                    case 400:
+                        console.log("Bad Request")
+                    break;
+                    case 401:
+                        console.log("Request was unauthorized")
+                    break;
+                    case 403:
+                        console.log("Forbidden to make request")
+                    break;
+                    case 404:
+                        console.log("Not found")
+                    break;
+                    case 500:
+                        console.log("Internal server error")
+                    break;
+                    case 503:
+                        console.log("Server down time")
+                    break;
+                    default:
+                        console.log("unahndled HTTP ERROR")
+                }
+                throw Error("HTTP Error: "+response.statusText)
+            }
+            return response
+        }
+        
+        leafy.util.resolveForJSON = async function(id){
+            let j = {}
+            if(id){
+                await fetch(id)
+                    .then(leafy.err.handleHTTPError)
+                    .then(resp => j = resp.json())
+                    .catch(error => leaflet.err(error))
+            }
+            else{
+                leaflet.err("No id provided to resolve for JSON.  Make sure you have an id.")
+            }
+            return j
+        }
+        
+        leafy.util.getURLVariable = function (variable){
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i=0;i<vars.length;i++) {
+                    var pair = vars[i].split("=");
+                    if(pair[0] == variable){return pair[1];}
+            }
+            return(false);
+        }
             
+        leafy.util.initializeMap = function(coords){
+            let geoURL = leafy.util.getURLVariable("geo")
+            let geoAnno = leafy.util.resolveForJSON(geoURL)
+            let coords = geoAnno.geometry.coordinates
+            
+            leafy.mymap = L.map('leafletInstanceContainer').setView(coords, 14)    
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 18,
             id: 'mapbox.satellite', //mapbox.streets
             accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
-            }).addTo(mymap);
+            }).addTo(leafy.mymap);
             
-//            var circle = L.circle([39.41, -91.17], {
-//                color: 'red',
-//                fillColor: '#f03',
-//                fillOpacity: 0.5,
-//                radius: 500
-//            }).addTo(mymap);
-//            
-//            var polygon = L.polygon([
-//                [39.42, -91.17],
-//                [39.41, -91.16],
-//                [39.40, -91.33]
-//            ]).addTo(mymap);
-            
-//            circle.bindPopup("I am a circle.");
-//            polygon.bindPopup("I am a polygon.");
-            
-//            var popup = L.popup()
-//                .setLatLng([39.406347, -91.145024])
-//                .setContent("I am McElwee Cemetery.")
-//                .openOn(mymap);
-            
-            let cemetery = {
-                "type": "Feature",
-                "properties": {
-                    "name": "McElwee Cemetery",
-                    "amenity": "Human Cemetery",
-                    "popupContent": "This is where our people are buried!",
-                    "openDataID" : "http://devstore.rerum.io/v1/id/5c100ecce4b05b14fb531ed0"
-                },
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [-91.145024, 39.406347]
-                }
-            }
-            
-             let cemetery2 = {
+            //Or just use the whole geo anno if you have formed it right...
+            let feature = JSON.parse(JSON.stringify(geoAnno))
+                     
+            let featureCollection = {
                 "type": "FeatureCollection",
                 "features":[
                     {
@@ -117,7 +147,7 @@
                 ]
             }
             
-            L.geoJSON(cemetery2, {
+            L.geoJSON(feature, {
 		pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, {
                             radius: 8,
@@ -128,13 +158,13 @@
                             fillOpacity: 0.8
                     });
                 },
-		onEachFeature: onEachFeature
+		onEachFeature: pointEachFeature
             }).addTo(mymap)
 
-            mymap.on('click', onMapClick)
+            leafy.mymap.on('click', onMapClick)
         }
         
-        function onEachFeature(feature, layer) {
+        leafy.util.pointEachFeature = function (feature, layer) {
             let featureText = feature.properties.cemProjLink
             let popupContent = ""
             if(featureText){
@@ -146,9 +176,11 @@
             layer.bindPopup(popupContent);
 	}
         
-        function onMapClick(e) {
+        //let popup = L.popup()
+        leafy.util.onMapClick = function (e) {
+            let popup = L.popup()
             popup
                 .setLatLng(e.latlng)
                 .setContent("You clicked the map at " + e.latlng.toString())
-                .openOn(mymap);
+                .openOn(leafy.mymap);
         }

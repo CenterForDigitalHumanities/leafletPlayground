@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>RERUM Leaflet Cemetery Demo</title>
+        <title>RERUM Leaflet</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
          <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
@@ -18,22 +18,24 @@ and open the template in the editor.
          </script>
          <script src="js/leafletHelper.js"></script>  
          <style>
-             #cemeteryOverview { height: 50rem; }
+             #leafletInstanceContainer { height: 50rem; }
          </style>
     </head>
     <body>
         <div id="main">
             <h3>
-                Cemetery Overview
+                RERUM Leaflet Instance
             </h3>
-            <div id="cemeteryOverview">
+            <div id="leafletInstanceContainer">
                 
             </div>
         </div>
     </body>
     <script>
-        let mymap = L.map('cemeteryOverview').setView([39.406347, -91.145024], 14)    
-        initializeMap()
+        
+        let latlang = [39.406347, -91.145024]
+        //Feed the coords to initialize the map with into initializeMap
+        initializeMap(latlang)
 
     </script>
 </html>
