@@ -11,6 +11,10 @@
         leafy.util = {}
         leafy.err = {}
         
+        leafy.err.generic = function(error){
+            alert(error)
+        }
+        
         leafy.err.handleHTTPError = function(response){
             if (!response.ok){
                 let status = response.status;
@@ -47,10 +51,10 @@
                 await fetch(id)
                     .then(leafy.err.handleHTTPError)
                     .then(resp => j = resp.json())
-                    .catch(error => leaflet.err(error))
+                    .catch(error => leafy.err.generic(error))
             }
             else{
-                leaflet.err("No id provided to resolve for JSON.  Make sure you have an id.")
+                leafy.err.generic("No id provided to resolve for GeoJSON.  Make sure you have an id.")
             }
             return j
         }
@@ -65,10 +69,10 @@
             return(false);
         }
             
-        leafy.util.initializeMap = function(coords){
+        leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
-            let geoAnno = leafy.util.resolveForJSON(geoURL)
-            let coords = geoAnno.geometry.coordinates
+            let geoAnno = await leafy.util.resolveForJSON(geoURL)
+            //let coords = geoAnno.geometry.coordinates
             
             leafy.mymap = L.map('leafletInstanceContainer').setView(coords, 14)    
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
@@ -158,8 +162,8 @@
                             fillOpacity: 0.8
                     });
                 },
-		onEachFeature: pointEachFeature
-            }).addTo(mymap)
+		onEachFeature: leafy.util.pointEachFeature
+            }).addTo(leafy.mymap)
 
             leafy.mymap.on('click', onMapClick)
         }
