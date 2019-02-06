@@ -74,84 +74,35 @@
             let geoAnno = await leafy.util.resolveForJSON(geoURL)
             //let coords = geoAnno.geometry.coordinates
             
+            
             leafy.mymap = L.map('leafletInstanceContainer').setView(coords, 14)    
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 18,
+            maxZoom: 100,
             id: 'mapbox.satellite', //mapbox.streets
             accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
             }).addTo(leafy.mymap);
             
             //Or just use the whole geo anno if you have formed it right...
-            let feature = JSON.parse(JSON.stringify(geoAnno))
-                     
-            let featureCollection = {
-                "type": "FeatureCollection",
-                "features":[
-                    {
-                        "properties": {
-                            "name": "Claud H. B. Bland",
-                            "amenity": "Buried Human",
-                            "popupContent": "This is Claud, he is dead",
-                            "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e",
-                            "cemProjLink" : "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-91.150088, 39.40209]
-                        },
-                        "type": "Feature",
-                        id:1
-                    },
-                    {
-                        "properties": {
-                            "name": "Elizabeth C. Carr",
-                            "amenity": "Buried Human",
-                            "popupContent": "This is Elizabeth, she is a stationary zombie",
-                            "openDataID" : "http://devstore.rerum.io/v1/id/5bc8075ae4b09992fca2221f",
-                            "cemProjLink": "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc8075ae4b09992fca2221f"
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-91.149584, 39.402057]
-                        },
-                        "type": "Feature",
-                        id:2
-                    },
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "name": "McElwee Cemetery",
-                            "amenity": "Human Cemetery",
-                            "popupContent": "This is where our people are buried!",
-                            "openDataID" : "http://devstore.rerum.io/v1/id/5c100ecce4b05b14fb531ed0",
-                            "cemProjLink": "http://cemetery.rerum.io/mcelwee/main.html"
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-91.148769,39.402507]
-                        },
-                        id:3
-                    },
-                    {
-                        "type": "Feature",
-                        "properties": {
-                            "name": "McElwee Cemetery Zombie Housing",
-                            "amenity": "Zombies!",
-                            "popupContent": "Zombies can find affordable home rentals here",
-                            "openDataID" : "",
-                            "cemProjLink": ""
-                        },
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-91.145743, 39.408051]
-                        },
-                        id:5
-                    }
-                ]
-            }
+            let features = JSON.parse(JSON.stringify(geoAnno))
             
-            L.geoJSON(feature, {
+            let tom = {
+                    "properties": {
+                        "name": "SLU Test",
+                        "amenity": "Outside SLU",
+                        "popupContent": "This is for our SLU test",
+                        "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e",
+                        "cemProjLink" : "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [-90.2348,38.636524]
+                    },
+                    "type": "Feature",
+                    "id":1
+                }
+                     
+            L.geoJSON(features, {
 		pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, {
                             radius: 8,
@@ -164,8 +115,21 @@
                 },
 		onEachFeature: leafy.util.pointEachFeature
             }).addTo(leafy.mymap)
+            
+//            var circle = L.circle([38.636524, -90.2348], {
+//                color: 'red',
+//                fillColor: '#f03',
+//                fillOpacity: 0.5,
+//                radius: 500
+//            })
+//            
+//            var polygon = L.polygon([
+//                [38.636526, -90.23484],
+//                [38.636533, -90.234767],
+//                [38.636491, -90.234777]
+//            ]).addTo(leafy.mymap)
 
-            leafy.mymap.on('click', onMapClick)
+            leafy.mymap.on('click', leafy.util.onMapClick)
         }
         
         leafy.util.pointEachFeature = function (feature, layer) {
