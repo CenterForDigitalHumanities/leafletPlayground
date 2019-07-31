@@ -71,9 +71,12 @@
             
         leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
-            let geoAnno = await leafy.util.resolveForJSON(geoURL)
-            //let coords = geoAnno.geometry.coordinates
-            
+            let geoAnno, features
+            if(geoURL){
+                geoAnno = await leafy.util.resolveForJSON(geoURL)
+                coords = geoAnno.geometry.coordinates
+                features = JSON.parse(JSON.stringify(geoAnno))
+            }            
             
             leafy.mymap = L.map('leafletInstanceContainer').setView(coords, 14)    
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
@@ -84,25 +87,41 @@
             }).addTo(leafy.mymap);
             
             //Or just use the whole geo anno if you have formed it right...
-            let features = JSON.parse(JSON.stringify(geoAnno))
+             
             
-            let tom = {
+            // let tom = {
+            //         "properties": {
+            //             "name": "SLU Test",
+            //             "amenity": "Outside SLU",
+            //             "popupContent": "This is for our SLU test",
+            //             "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e",
+            //             "cemProjLink" : "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
+            //         },
+            //         "geometry": {
+            //             "type": "Point",
+            //             "coordinates": [-90.2348,38.636524]
+            //         },
+            //         "type": "Feature",
+            //         "id":1
+            //     }
+
+                let brit = {
                     "properties": {
-                        "name": "SLU Test",
-                        "amenity": "Outside SLU",
-                        "popupContent": "This is for our SLU test",
-                        "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e",
-                        "cemProjLink" : "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
+                        "name": "Something for Brittany",
+                        "amenity": "At WWT in Maryland Heights",
+                        "popupContent": "Bryan loves Brittany",
+                        "openDataID" : "",
+                        "cemProjLink" : ""
                     },
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [-90.2348,38.636524]
+                        "coordinates": [-90.449255, 38.702154]
                     },
                     "type": "Feature",
                     "id":1
                 }
                      
-            L.geoJSON(features, {
+            L.geoJSON(brit, {
 		pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, {
                             radius: 8,
