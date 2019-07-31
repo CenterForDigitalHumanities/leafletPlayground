@@ -111,7 +111,7 @@
                         "amenity": "At WWT in Maryland Heights",
                         "popupContent": "Bryan loves Brittany",
                         "openDataID" : "",
-                        "cemProjLink" : ""
+                        "cemProjLink" : "https://www.slsc.org/exhibits-attractions/pompeii-the-exhibition/"
                     },
                     "geometry": {
                         "type": "Point",
@@ -148,14 +148,14 @@
 //                [38.636491, -90.234777]
 //            ]).addTo(leafy.mymap)
 
-            leafy.mymap.on('click', leafy.util.onMapClick)
+            leafy.mymap.on('hover', leafy.util.onMapClick)
         }
         
         leafy.util.pointEachFeature = function (feature, layer) {
             let featureText = feature.properties.cemProjLink
             let popupContent = ""
             if(featureText){
-                popupContent += "<p> <a target='_blank' href='"+featureText+"'>Cemetery Project Link</a></p>";
+                popupContent += "<p> <a target='_blank' href='"+featureText+"'>Link to Anything!</a></p>";
             }
             if (feature.properties && feature.properties.popupContent) {
                 popupContent += feature.properties.popupContent
