@@ -148,7 +148,7 @@
 //                [38.636491, -90.234777]
 //            ]).addTo(leafy.mymap)
 
-            leafy.mymap.on('hover', leafy.util.onMapClick)
+            leafy.mymap.on('click', leafy.util.onMapClick)
         }
         
         leafy.util.pointEachFeature = function (feature, layer) {
