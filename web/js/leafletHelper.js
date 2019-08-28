@@ -68,6 +68,37 @@
             }
             return(false);
         }
+        
+        leafy.util.readInParshPolygons = async function(){
+            let polygons = await fetch('/geo-data/parishes.geojson')
+            .then(response => response.text())
+            polygons = JSON.parse(polygons)
+            return polygons
+        }
+        
+        leafy.util.initializeParishesMap = async function(coords){
+            leafy.mymap = L.map('leafletInstanceContainer').setView(coords, 10)    
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 100,
+            id: 'mapbox.satellite', //mapbox.streets
+            accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
+            }).addTo(leafy.mymap);
+            leafy.mymap.setView(coords,18);
+
+            let geoMarkers = await leafy.util.readInParishPolygons() //Need to load the data from /geo-data/parishes.geojson 
+            let myStyle = {
+                "color": "#ff7800",
+                "weight": 5,
+                "opacity": 0.65
+            }
+
+            L.geoJSON(geoMarkers, {
+                style: myStyle
+            }).addTo(leafy.mymap)
+            
+            leafy.mymap.on('click', leafy.util.onMapClick)
+        }
             
         leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
