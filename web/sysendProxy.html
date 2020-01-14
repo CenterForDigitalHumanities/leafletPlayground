@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="robots" content="noindex,nofollow"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+</head>
+<body>
+    <h2>Open this page in two different tabs</h2>
+    <p>It will also work cross-domain if you open <a href="https://thehabes.github.io/underConstruction/sysendProxy.html">this page</a></p>
+    <input type="text" id="theInput"><input/>
+    <button id="a">Post JSON containing {message:'your input'}</button>
+    <button id="b">Trigger Notification</button>
+    <pre></pre>
+    
+    <script src="./js/sysendBroadcaster.js" type="text/javascript"></script>
+    <script>
+        let pre = document.getElementsByTagName('pre')[0]
+        function message(msg) {
+            pre.innerHTML += msg + '\n';
+        }
+        broadcaster.on('post_message', function(obj) {
+            message('just get event "post_message" with message: ' + obj.message);
+        })
+        broadcaster.on('notification', function(obj) {
+            message('A NOTIFICATION')
+        })
+        broadcaster.on('dashboard_notification', function(obj) {
+            message('__DASHBOARD_NOTIFICATION__')
+        })
+        let a = document.getElementById('a')
+        let b = document.getElementById('b')
+        let input = document.getElementById('theInput')
+        a.onclick = function() {
+            broadcaster.broadcast('post_message', {message: input.value});
+            message('This tab/window posted the message "'+input.value+'"')
+        }
+        b.onclick = function() {
+            broadcaster.broadcast('notification')
+            message('This tab/window sent a notification')
+        }
+        broadcaster.proxy('dashboard.html')
+        broadcaster.proxy('users.html')
+        broadcaster.proxy('http://lived-religion-dev.rerum.io/deer-lr/dashboard.html')
+        broadcaster.proxy('http://leaflet.rerum.io/leaflet/sysendProxy.html')
+    </script>
+</body>
+</html>
