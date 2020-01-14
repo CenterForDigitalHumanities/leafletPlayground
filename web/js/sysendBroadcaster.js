@@ -1,5 +1,5 @@
 /**@license
- *  broadcaster.js - send messages between browser windows/tabs version 1.3.3
+ *  local_socket.js - send messages between browser windows/tabs version 1.3.3
  *
  *  Copyright (C) 2014-2018 Jakub T. Jankiewicz <https://jcubic.pl/me>
  *  Released under the MIT license
@@ -15,15 +15,15 @@
 /* global define, module, exports, localStorage, setTimeout */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['broadcaster'], factory);
+        define(['local_socket'], factory);
     } else if (typeof exports === 'object') {
         module.exports = factory();
     } else {
-        root.broadcaster = factory();
+        root.local_socket = factory();
     }
 })(typeof window !== "undefined" ? window : this, function() {
     // we use prefix so `foo' event don't collide with `foo' locaStorage value
-    var uniq_prefix = '___broadcaster___';
+    var uniq_prefix = '___local_socket___';
     var random_value = Math.random();
     // we use id because storage event is not executed if message was not
     // changed, and we want it if user send same object twice (before it will
@@ -130,7 +130,7 @@
       window.addEventListener('message', function(e) {
           var payload = JSON.parse(e.data);
           if (payload.name === uniq_prefix) {
-              broadcaster.broadcast(payload.key, payload.data);
+              local_socket.broadcast(payload.key, payload.data);
           }
       });
     }

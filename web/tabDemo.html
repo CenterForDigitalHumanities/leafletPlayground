@@ -20,29 +20,29 @@
         function message(msg) {
             pre.innerHTML += msg + '\n';
         }
-        broadcaster.on('post_message', function(obj) {
+        local_socket.on('post_message', function(obj) {
             message("RECIEVED MESSAGE '"+obj.message+'"');
         })
-        broadcaster.on('notification', function(obj) {
+        local_socket.on('notification', function(obj) {
             message('RECIEVED A NOTIFICATION')
         })
-        broadcaster.on('dashboard_notification', function(obj) {
+        local_socket.on('dashboard_notification', function(obj) {
             message('RECIEVED __DASHBOARD_NOTIFICATION__')
         })
         let a = document.getElementById('a')
         let b = document.getElementById('b')
         let input = document.getElementById('theInput')
         a.onclick = function() {
-            broadcaster.broadcast('post_message', {message: input.value});
+            local_socket.broadcast('post_message', {message: input.value});
             message('This tab/window posted the message "'+input.value+'"')
         }
         b.onclick = function() {
-            broadcaster.broadcast('notification')
+            local_socket.broadcast('notification')
             message('This tab/window sent a notification')
         }
         
-        broadcaster.proxy('http://lived-religion-dev.rerum.io/deer-lr/')
-        broadcaster.proxy('http://leaflet.rerum.io/leaflet/')
+        local_socket.proxy('http://lived-religion-dev.rerum.io/deer-lr/')
+        local_socket.proxy('http://leaflet.rerum.io/leaflet/')
     </script>
 </body>
 </html>
