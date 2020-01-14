@@ -8,7 +8,7 @@
 </head>
 <body>
     <h2>Open this page in two different tabs</h2>
-    <p>It will also work cross-domain if you open <a href="https://thehabes.github.io/underConstruction/sysendProxy.html">this page</a></p>
+    <p>It will also work cross-domain if you open <a href="http://lived-religion-dev.rerum.io/deer-lr/dashboard.html">this page</a></p>
     <input type="text" id="theInput"><input/>
     <button id="a">Post JSON containing {message:'your input'}</button>
     <button id="b">Trigger Notification</button>
@@ -21,13 +21,13 @@
             pre.innerHTML += msg + '\n';
         }
         broadcaster.on('post_message', function(obj) {
-            message('just get event "post_message" with message: ' + obj.message);
+            message("RECIEVED MESSAGE '"+obj.message+'"');
         })
         broadcaster.on('notification', function(obj) {
-            message('A NOTIFICATION')
+            message('RECIEVED A NOTIFICATION')
         })
         broadcaster.on('dashboard_notification', function(obj) {
-            message('__DASHBOARD_NOTIFICATION__')
+            message('RECIEVED __DASHBOARD_NOTIFICATION__')
         })
         let a = document.getElementById('a')
         let b = document.getElementById('b')
@@ -40,10 +40,7 @@
             broadcaster.broadcast('notification')
             message('This tab/window sent a notification')
         }
-        broadcaster.proxy('dashboard.html')
-        broadcaster.proxy('users.html')
         broadcaster.proxy('http://lived-religion-dev.rerum.io/deer-lr/dashboard.html')
-        broadcaster.proxy('http://leaflet.rerum.io/leaflet/sysendProxy.html')
     </script>
 </body>
 </html>
