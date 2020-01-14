@@ -8,8 +8,8 @@
 </head>
 <body>
     <h2>Open this page in two different tabs</h2>
-    <p>It will also work cross-domain if you open <a href="http://lived-religion-dev.rerum.io/deer-lr/dashboard.html">this page</a></p>
-    <input type="text" id="theInput"><input/>
+    <p>It will also work cross-domain if you open <a href="http://lived-religion-dev.rerum.io/deer-lr/tabDemo.html">this page</a></p>
+    <input type="text" id="theInput" />
     <button id="a">Post JSON containing {message:'your input'}</button>
     <button id="b">Trigger Notification</button>
     <pre></pre>
@@ -40,7 +40,9 @@
             broadcaster.broadcast('notification')
             message('This tab/window sent a notification')
         }
-        broadcaster.proxy('http://lived-religion-dev.rerum.io/deer-lr/dashboard.html')
+        
+        broadcaster.proxy('http://lived-religion-dev.rerum.io/deer-lr/')
+        broadcaster.proxy('http://leaflet.rerum.io/leaflet/')
     </script>
 </body>
 </html>
