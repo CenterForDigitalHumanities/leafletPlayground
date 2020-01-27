@@ -192,6 +192,42 @@
 		onEachFeature: leafy.demo.pointEachFeature
             }).addTo(leafy.mymap)
         }
+        
+        leafy.demo.submitAnno = async function(event){
+            let targetURL = document.getElementById('objURL').value
+            let targetObj =  await fetch(targetURL).then(response => response.json())
+            let lat = document.getElementById('lat').value
+            let long = document.getElementById('long').value
+            let targetLabel = targetObj.label ? targetObj.label : targetObj.name? targetObj.name : "Unknown Label"
+            let targetDescription = targetObj.description ? targetObj.description : "No Description"
+            let demoAnno = 
+            {
+                "type":"Annotation",
+                "@context":"http://www.w3.org/ns/anno.jsonld",
+                "target":targetURL,   
+                body:{
+                    "type": "Feature", 
+                    "properties": { 
+                        "label": targetLabel, 
+                        "description": targetDescription
+                    }, 
+                    "geometry": { 
+                        "type": "Point", "coordinates": [long, lat] 
+                    }
+                },
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo"
+            }
+            
+            let createdObj = await fetch(leafy.URLS.CREATE, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(demoAnno)
+            })
+            .then(response => response.json())
+            .then(newObj => {return newObj.new_obj_state})
+            console.log(createdObj)
+        }
             
         leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
