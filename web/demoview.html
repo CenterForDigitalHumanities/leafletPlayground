@@ -28,6 +28,7 @@ and open the template in the editor.
         <label>Longitude</label><input type="number" />
         <input value="Go To Coordinates" type="button" onclick="leafy.demo.goToCoords(event)"
         
+        <input value="Refresh Markers" type="button" onclick="leafy.demo.refreshMarkers(event)"       
         <div id="leafletInstanceContainer">
             
         </div>
@@ -35,25 +36,6 @@ and open the template in the editor.
     <script>
         let latlang = [38.636524,-90.2348] //default starting coords
         //let latlang = [38.6360699, -90.2348349] //SLU
-        
-        let historyWildcard = {"$exists":true, "$size":0}
-        let queryObj = {
-            "__rerum.history.next": historyWildcard,
-            "madeByUser" : "BryGuy",
-            "madeByApp"  : "MapDemo"
-        }
-        
-        let mapData = await fetch(LR.URLS.QUERY, {
-            method: "POST",
-            mode: "cors",
-            body: JSON.stringify(queryObj)
-        })
-        .then(response => response.json())
-
-        leafy.util.initializeDemoMap(latlang, mapData)
-
-        leafy.demo.goToCoord = function(event){
-            leafy.mymap.setView(coords,8)
-        }
+        leafy.demo.initializeDemoMap(latlang, mapData)
     </script>
 </html>

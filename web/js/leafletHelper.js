@@ -6,6 +6,8 @@
 
         let leafy = {}
         
+        leafy.demo = {}
+        
         leafy.URLS = {
             BASE_ID: "http://devstore.rerum.io/v1",
             DELETE: "http://tinydev.rerum.io/app/delete",
@@ -107,8 +109,8 @@
             leafy.mymap.on('click', leafy.util.onMapClick)
         }
         
-        leafy.util.initializeDemoMap = async function(coords){
-            leafy.mymap = L.map('leafletInstanceContainer').setView(coords, 10)    
+        leafy.demo.initializeDemoMap = async function(coords){
+            leafy.mymap = L.map('leafletInstanceContainer')   
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 100,
@@ -116,31 +118,36 @@
             accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
             }).addTo(leafy.mymap);
             leafy.mymap.setView(coords,8);
-
-            let geoMarkers = await leafy.util.gatherDemoData() //Need to load the data from madeBy:MapDemo
-            let myStyle = {
-                "color": "#ff7800",
-                "weight": 2,
-                "opacity": 0.65
+            
+            let historyWildcard = {"$exists":true, "$size":0}
+            let queryObj = {
+                "__rerum.history.next": historyWildcard,
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo"
             }
-
+            let geoMarkers = await fetch(LR.URLS.QUERY, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(queryObj)
+            })
+            .then(response => response.json())
+            
             L.geoJSON(geoMarkers, {
 		pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, {
-                            radius: 8,
-                            fillColor: "#ff7800",
-                            color: "#000",
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.8
+                        radius: 8,
+                        fillColor: "#ff7800",
+                        color: "#000",
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
                     });
                 },
-		onEachFeature: leafy.util.pointEachDemoFeature
+		onEachFeature: leafy.demo.pointEachFeature
             }).addTo(leafy.mymap)
-
         }
         
-        leafy.util.pointEachDemoFeature = function (feature, layer) {
+        leafy.demo.pointEachFeature = function (feature, layer) {
             let featureText = feature.properties["@id"]
             let popupContent = ""
             if (feature.properties && feature.properties.label) {
@@ -151,6 +158,40 @@
             }
             layer.bindPopup(popupContent);
 	}
+        
+        leafy.demo.goToCoord = function(event, coords){
+            leafy.mymap.setView(coords,8)
+            document.getElementById("currentCoords").innerHTML = coords.toString()
+        }
+        
+        leafy.demo.refreshMarkers = async function(){
+            let historyWildcard = {"$exists":true, "$size":0}
+            let queryObj = {
+                "__rerum.history.next": historyWildcard,
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo"
+            }
+            let geoMarkers = await fetch(LR.URLS.QUERY, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(queryObj)
+            })
+            .then(response => response.json())
+            L.geoJSON().remove() //Remove the old geoJSON layer
+            L.geoJSON(geoMarkers, {
+		pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        radius: 8,
+                        fillColor: "#ff7800",
+                        color: "#000",
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+		onEachFeature: leafy.demo.pointEachFeature
+            }).addTo(leafy.mymap)
+        }
             
         leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
