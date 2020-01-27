@@ -33,27 +33,24 @@ and open the template in the editor.
         </div>
     </body>
     <script>
-        let latlang = [38.636524,-90.2348]
+        let latlang = [38.636524,-90.2348] //default starting coords
         //let latlang = [38.6360699, -90.2348349] //SLU
-        //Feed the coords to initialize the map with into initializeMap
-        leafy.util.initializeDemoMap(latlang)
         
+        let historyWildcard = {"$exists":true, "$size":0}
         let queryObj = {
-            $or: [{
-                "targetCollection": collectionName
-            }, {
-                "body.targetCollection": collectionName
-            }],
             "__rerum.history.next": historyWildcard,
-            "__rerum.generatedBy": LR.APPAGENT,
-            "target": itemID
+            "madeByUser" : "BryGuy",
+            "madeByApp"  : "MapDemo"
         }
-        fetch(LR.URLS.QUERY, {
+        
+        let mapData = await fetch(LR.URLS.QUERY, {
             method: "POST",
             mode: "cors",
             body: JSON.stringify(queryObj)
         })
         .then(response => response.json())
+
+        leafy.util.initializeDemoMap(latlang, mapData)
 
         leafy.demo.goToCoord = function(event){
             leafy.mymap.setView(coords,8)
