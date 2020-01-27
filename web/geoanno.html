@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+    </head>
+    <body>
+        <p> Supply an existing object via its URI. </p>
+        <p> Then supply a latitude and longitude. </p>
+        <p> Then Submit. </p>
+        <label>Object URI</label><input id="objURI" type="text" />
+        <label>Latitude</label><input id="lat" type="number" />
+        <label>Longitude</label><input id="long" type="number" />
+        <input type="button" onclick="leafy.demo.submitAnno(event)"
+    </body>
+    <script>
+        
+        leafy.demo.submitAnno = async function(event){
+            let targetObj =  await fetch(document.getElementById('objURL').value).then(response => response.json())
+            let lat = document.getElementById('lat').value
+            let long = document.getElementById('long').value
+            let targetLabel = targetObj.label ? targetObj.label : targetObj.name? targetObj.name : "Unknown Label"
+            let targetDescription = targetObj.description ? targetObj.description : "No Description"
+            let demoAnno = {
+                "type": "Feature", 
+                "properties": { 
+                    "label": targetlabel, 
+                    "description": targetDescription
+                }, 
+                "geometry": { 
+                    "type": "Point", "coordinates": [long, lat] 
+                },
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo"
+            }
+            fetch(leafy.URLS.CREATE, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(demoAnno)
+            })
+            .then(response => response.json())
+    
+            
+        }
+    </script>
+</html>

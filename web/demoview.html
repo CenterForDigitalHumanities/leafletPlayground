@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+            integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+            crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+            crossorigin="">
+        </script>
+        <script src="js/leafletHelper.js"></script>  
+        <style>
+           #leafletInstanceContainer { height: 50rem; }
+        </style>
+    </head>
+    <body>
+        <p> Supply a latitude and longitude to fly to.  If you added a point, you should see it here. </p>
+        <p> You are at coordinates <span id="currentCoords">[38.636524,-90.2348]</span> </p>
+        <label>Latitude</label><input type="number" />
+        <label>Longitude</label><input type="number" />
+        <input value="Go To Coordinates" type="button" onclick="leafy.demo.goToCoords(event)"
+        
+        <div id="leafletInstanceContainer">
+            
+        </div>
+    </body>
+    <script>
+        let latlang = [38.636524,-90.2348]
+        //let latlang = [38.6360699, -90.2348349] //SLU
+        //Feed the coords to initialize the map with into initializeMap
+        leafy.util.initializeDemoMap(latlang)
+        
+        let queryObj = {
+            $or: [{
+                "targetCollection": collectionName
+            }, {
+                "body.targetCollection": collectionName
+            }],
+            "__rerum.history.next": historyWildcard,
+            "__rerum.generatedBy": LR.APPAGENT,
+            "target": itemID
+        }
+        fetch(LR.URLS.QUERY, {
+            method: "POST",
+            mode: "cors",
+            body: JSON.stringify(queryObj)
+        })
+        .then(response => response.json())
+
+        leafy.demo.goToCoord = function(event){
+            leafy.mymap.setView(coords,8)
+        }
+    </script>
+</html>
