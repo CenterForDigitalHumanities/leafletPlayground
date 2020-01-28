@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--
+    author: Bryan Haberberger <bryan.j.haberberger@slu.edu>
+    -->
+<html>
+
+<head>
+    <title>Lived Religions events</title>
+    <meta charset="UTF-8">
+    <!--     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+    <style>
+        #leafletPreview {
+            height: 20rem;
+        }
+    </style>
+</head>
+
+<body>
+    <lr-nav></lr-nav>
+
+    <div class="container">
+        <h2 class="text-primary">Create a New Location</h2>
+        <div class="card bd-primary">
+            <div class="card_body">
+                <form id="newLocationForm" deer-item-type="simple" deer-type="Annotation" deer-context="http://www.w3.org/ns/anno.jsonld">
+                    <label>Name or Label</label>
+                    <input type="hidden" deer-key="madeByApp" value="MapDemo">
+                    <input type="hidden" deer-key="madeByUser" value="BryGuy">
+                    <input type="hidden" deer-key="target" value="loading">
+                    <input type="hidden" deer-key="body.type" value="Feature">
+                    <input type="hidden" deer-key="body.properties.description" value="">
+                    <input type="hidden" deer-key="body.properties.label" value="">
+                    <h4>Annotation Target</h4>
+                    <label title="Provide the URI of the item the annotation will target.">Target URI</label>
+                    <input type="text" title="Provide the URI of the item the annotation will target." deer-key="target">
+                    
+                    <h4 title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually.">Map Information</h4>
+                    <div title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually." id="leafletPreview" class="col"></div>
+                    <input type="hidden" deer-key="body.geometry" value="{}">
+                    <div class="grouped">
+                        <label>Latitude</label>
+                        <input id="leafLat" step=".000000001" type="number">
+
+                        <label>Longitude</label>
+                        <input id="leafLong" step=".000000001" type="number">
+                    </div>
+
+                    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
+                    <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js"></script>
+
+                    <script>
+                        var previewMap = L.map('leafletPreview').setView([38.628009, -90.201101], 16)
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        }).addTo(previewMap);
+                        var osmb = new OSMBuildings(previewMap).load('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json')
+
+                        leafLat.oninput = updateGeometry
+                        leafLong.oninput = updateGeometry
+
+                        function updateGeometry(event, clickedLat, clickedLong) {
+                            event.preventDefault()
+                            if (clickedLong > -180) {
+                                leafLat.value = parseInt(clickedLat * 1000000) / 1000000
+                                leafLong.value = parseInt(clickedLong * 1000000) / 1000000
+                            }
+                            let geometryInput = document.querySelector("input[deer-key='geometry']")
+                            let lat = parseInt(leafLat.value * 1000000) / 1000000
+                            let long = parseInt(leafLong.value * 1000000) / 1000000
+                            if (lat && long) {
+                                previewMap.setView([lat, long], 18)
+                                let geometry = {
+                                    type: "Point",
+                                    coordinates: [long, lat]
+                                }
+                                geometryInput.value = JSON.stringify(geometry)
+                            }
+                        }
+                        previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
+                    </script>               
+                    <h4>Annotation Descriptive</h4>
+                    <label title="Provide a short decription of this Location with otherwise unprovided or disambiguating details.">Abstract</label>
+                    <textarea title="Provide a short decription of this Location with otherwise unprovided or disambiguating details." deer-key="description"></textarea>
+                    <input type="submit" value="Save Coordinate Annotation"/>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card_body">
+                <h3>Most Recent Submitted Info</h3>
+                <deer-view deer-listening="newLocationForm">
+                </deer-view>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        addEventListener('deer-created', event => {
+            LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Added!`, true)
+        })
+        
+        addEventListener('deer-updated', event => {
+            LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Information Updated!`, true)
+        })
+        
+        /**
+         * A hack to force redraw by refreshing the page.
+         */
+        addEventListener('globalFeedbackFinished', event => {
+           document.location.reload()
+        })
+
+    </script>
+    <script src="./js/deerInitializer.js" type="module"></script>
+</body>
+
+</html>
