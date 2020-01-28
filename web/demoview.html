@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Coordinate Assertions</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
@@ -19,6 +19,9 @@ and open the template in the editor.
         <script src="js/leafletHelper.js"></script>  
         <style>
            #leafletInstanceContainer { height: 50rem; }
+           #currentCoords{
+               font-weight: bold;
+           }
         </style>
     </head>
     <body>
@@ -26,8 +29,9 @@ and open the template in the editor.
         <p> You are at coordinates <span id="currentCoords">[12,12]</span> </p>
         <label>Latitude</label><input id="leafLat" type="number" />
         <label>Longitude</label><input id="leafLong" type="number" />
-        <input value="Go To Coordinates" type="button" onclick="leafy.demo.goToCoords(event)"/>
-        <input value="Refresh Markers" type="button" onclick="leafy.demo.refreshMarkers(event)"/> 
+        <input value="Go To Coordinates" type="button" class="button primary" onclick="leafy.demo.goToCoords(event)"/>
+        <input value="Refresh Markers" type="button" class="button primary" onclick="leafy.demo.refreshMarkers(event)"/> 
+        <br>
         <div id="leafletInstanceContainer">
             
         </div>

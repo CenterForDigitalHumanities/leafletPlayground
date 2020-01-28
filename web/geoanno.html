@@ -13,11 +13,16 @@ and open the template in the editor.
         <script src="js/leafletHelper.js"></script>
     </head>
     <body>
-        <p> Supply an existing object URI. </p>
-        <p> Then supply a latitude and longitude. </p>
-        <p> Then Submit. </p>
-        <label>Object URI</label><input id="objURI" type="text" />
+        <h3> Supply an existing object URI.  Then supply a latitude and longitude. Then Submit.</h3>
+
+        <label>
+            URI to assert coordinates for.  The coordinate data will contain some information from this item, if possible. 
+            Visit <a target="_blank" href="demoview.html">this page</a> to see all coordinate assertions. 
+        </label>
+        <input id="objURI" type="text" />
         <!--<input type="button" class="button primary" value="Resolve URI" onclick="getTargetProperties(event)"/>-->
+        <br>
+ 
         <div class="grouped">
             <label>Latitude</label>
             <input id="leafLat" step=".000000001" type="number"/>

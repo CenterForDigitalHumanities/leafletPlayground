@@ -137,6 +137,7 @@
         
         leafy.demo.pointEachFeature = function (feature, layer) {
             //@id, label, description
+            layer.hasMyPoints = true
             let featureText = feature.properties["@id"]
             let popupContent = ""
             if (feature.properties && feature.properties.label) {
@@ -153,7 +154,7 @@
         
         leafy.demo.goToCoords = function(event){
             let coords = [leafLat.value, leafLong.value]
-            leafy.mymap.setView(coords,8)
+            leafy.mymap.flyTo(coords,8)
             document.getElementById("currentCoords").innerHTML = coords.toString()
         }
         
@@ -164,13 +165,23 @@
                 "madeByUser" : "BryGuy",
                 "madeByApp"  : "MapDemo"
             }
+            
             let geoMarkers = await fetch(leafy.URLS.QUERY, {
                 method: "POST",
                 mode: "cors",
                 body: JSON.stringify(queryObj)
             })
             .then(response => response.json())
-            L.geoJSON().remove() //Remove the old geoJSON layer
+            .then(geoMarkers => {
+                return geoMarkers.map(anno => { return anno.body })
+            })
+            
+            leafy.mymap.eachLayer(function(layer) {
+                if ( layer.hasMyPoints ) {
+                    leafy.mymap.removeLayer(layer)
+                }
+            })
+
             L.geoJSON(geoMarkers, {
 		pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, {
