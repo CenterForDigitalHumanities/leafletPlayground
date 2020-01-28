@@ -13,6 +13,7 @@
             DELETE: "http://tinydev.rerum.io/app/delete",
             CREATE: "http://tinydev.rerum.io/app/create",
             UPDATE: "http://tinydev.rerum.io/app/update",
+            QUERY: "http://tinydev.rerum.io/app/query",
             OVERWRITE: "http://tinydev.rerum.io/app/overwrite"
         }
         
@@ -109,7 +110,7 @@
             leafy.mymap.on('click', leafy.util.onMapClick)
         }
         
-        leafy.demo.initializeDemoMap = async function(coords){
+        leafy.demo.initializeDemoMap = async function(coords, geoMarkers){
             leafy.mymap = L.map('leafletInstanceContainer')   
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -118,20 +119,7 @@
             accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
             }).addTo(leafy.mymap);
             leafy.mymap.setView(coords,8);
-            
-            let historyWildcard = {"$exists":true, "$size":0}
-            let queryObj = {
-                "__rerum.history.next": historyWildcard,
-                "madeByUser" : "BryGuy",
-                "madeByApp"  : "MapDemo"
-            }
-            let geoMarkers = await fetch(LR.URLS.QUERY, {
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify(queryObj)
-            })
-            .then(response => response.json())
-            
+
             L.geoJSON(geoMarkers, {
 		pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, {
@@ -148,6 +136,7 @@
         }
         
         leafy.demo.pointEachFeature = function (feature, layer) {
+            //@id, label, description
             let featureText = feature.properties["@id"]
             let popupContent = ""
             if (feature.properties && feature.properties.label) {
@@ -156,10 +145,14 @@
             if (feature.properties && feature.properties["@id"]) {
                 popupContent += `<p> <a target='_blank' href='${featureText}'>See Data Artifact</a></p>`
             }
+            if (feature.properties && feature.properties.description) {
+                popupContent += `<p>${feature.properties.description}</p>`
+            }
             layer.bindPopup(popupContent);
 	}
         
-        leafy.demo.goToCoord = function(event, coords){
+        leafy.demo.goToCoords = function(event){
+            let coords = [leafLat.value, leafLong.value]
             leafy.mymap.setView(coords,8)
             document.getElementById("currentCoords").innerHTML = coords.toString()
         }
@@ -171,7 +164,7 @@
                 "madeByUser" : "BryGuy",
                 "madeByApp"  : "MapDemo"
             }
-            let geoMarkers = await fetch(LR.URLS.QUERY, {
+            let geoMarkers = await fetch(leafy.URLS.QUERY, {
                 method: "POST",
                 mode: "cors",
                 body: JSON.stringify(queryObj)
