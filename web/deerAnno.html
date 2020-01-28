@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-    author: Bryan Haberberger <bryan.j.haberberger@slu.edu>
+        In this scenario, the id of the entity is simply used as a string for deer-key="target" where the form is the actual Annotation object, typed simple.  
     -->
 <html>
 
@@ -26,15 +26,15 @@
                 <form id="newCoordinateAnno" deer-item-type="simple" deer-type="Annotation" deer-context="http://www.w3.org/ns/anno.jsonld">
                     <input type="hidden" deer-key="madeByApp" value="MapDemo">
                     <input type="hidden" deer-key="madeByUser" value="BryGuy">
-                    <input type="hidden" deer-key="body" value="{}">
-                    
-                    <h4>Annotation Reasoning</h4>
-                    <label title="Provide a short decription of the reason for this annotation.">Description</label>
-                    <textarea title="Provide a short decription of the reason for this annotation." deer-key="description"></textarea>
+                    <input id="bodyInput" type="hidden" deer-key="body" value="{}">
                     
                     <h4>Annotation Target</h4>
                     <label title="Provide the URI of the item the annotation will target.">Target URI</label>
                     <input id="annotationTarget" type="text" title="Provide the URI of the item the annotation will target." onchange="provideTarget(event)" deer-key="target">
+                    
+                    <h4>Annotation Reasoning</h4>
+                    <label title="Provide a short decription of the reason for this annotation.">Description</label>
+                    <textarea title="Provide a short decription of the reason for this annotation." deer-key="description"></textarea>
                     
                     <h4 title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually.">Coordinates Information</h4>
                     <div title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually." id="leafletPreview" class="col"></div>
@@ -57,10 +57,6 @@
                             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         }).addTo(previewMap);
                         var osmb = new OSMBuildings(previewMap).load('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json')
-
-                        leafLat.oninput = updateGeometry
-                        leafLong.oninput = updateGeometry
-
                         function updateGeometry(event, clickedLat, clickedLong) {
                             event.preventDefault()
                             if (clickedLong > -180) {
@@ -80,16 +76,18 @@
                                 bodyInput.value = JSON.stringify(bodySoFar)
                             }
                         }
+                        document.getElementById("leafLat").oninput = updateGeometry
+                        document.getElementById("leafLong").oninput = updateGeometry
                         previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
                     </script>     
                     
-                    <h4>Coordinates Label</h4>
+<!--                    <h4>Coordinates Label</h4>
                     <label title="Provide the URI of the item the annotation will target.">Label</label>
-                    <input type="text" title="Provide a label that represents the coordinates you provided." deer-key="body.properties.label">
+                    <input type="text" title="Provide a label that represents the coordinates you provided." onchange="updateCoordinateProps(event)">
                     
                     <h4>Coordinates Description</h4>
                     <label title="Provide a short decription of the coordinates provided with otherwise unprovided or disambiguating details.">Abstract</label>
-                    <textarea title="Provide a short decription of the coordinates provided with otherwise unprovided or disambiguating details." deer-key="body.properties.description"></textarea>
+                    <textarea title="Provide a short decription of the coordinates provided with otherwise unprovided or disambiguating details." onchange="updateCoordinateProps(event)"></textarea>-->
                     
                     <input type="submit" value="Save Coordinate Annotation"/>
                 </form>
@@ -106,6 +104,12 @@
     </div>
 
     <script>
+        
+        function updateCoordinateProps(event){
+            
+        }
+        
+
         
         async function provideTarget(event){
             let target = document.getElementById('annotationTarget').value
@@ -128,22 +132,17 @@
         } 
         
         addEventListener('deer-created', event => {
-            LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Added!`, true)
+            //LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Added!`, true)
         })
         
         addEventListener('deer-updated', event => {
-            LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Information Updated!`, true)
+            //LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Information Updated!`, true)
         })
         
-        /**
-         * A hack to force redraw by refreshing the page.
-         */
-        addEventListener('globalFeedbackFinished', event => {
-           document.location.reload()
-        })
 
     </script>
     <script src="./js/deerInitializer.js" type="module"></script>
+    <script src="./js/leafletHelper.js" type="javascript"></script>
 </body>
 
 </html>

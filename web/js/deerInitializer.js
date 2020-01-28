@@ -20,7 +20,7 @@ import { default as renderer, initializeDeerViews } from 'https://centerfordigit
 
 // Record is only needed for saving or updating items.
 // CDN at https://centerfordigitalhumanities.github.io/deer/releases/
-import { default as record, initializeDeerForms } from 'https://centerfordigitalhumanities.github.io/deer/releases/alpha-0.9/deer-record.js'
+import { default as record, initializeDeerForms } from './deer-record.js'
 
 // fire up the element detection as needed
 initializeDeerViews(DEER)
