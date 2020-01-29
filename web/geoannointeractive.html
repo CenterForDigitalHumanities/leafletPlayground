@@ -12,11 +12,54 @@ and open the template in the editor.
         <link rel="stylesheet" href="https://unpkg.com/chota@latest">
         <script src="js/leafletHelper.js"></script>
     </head>
-    <body>
-        <p> Supply an existing object via its URI. </p>
-        <p> Then supply a latitude and longitude. </p>
-        <p> Then Submit. </p>
-        <label>Object URI</label><input id="objURI" type="text" />
+    <body class="container">
+        <div id="targetURL">You URL is 1234567890</div>
+        <div id="latAndLong">Your coordinates are 22,22</div>
+        
+        <!-- Get the URL to target, try to resolve it, confirm and next -->
+        <div class="card">
+            <header>Supply an existing object URI.</header>
+            <div class="card_body">
+                <label>Object URI</label><input id="objURI" type="text" />
+            </div>
+            <footer>
+                <input type="button" class="button primary" value="Use This URI"/>
+            </footer>
+        </div>
+        <div class="card ">
+            <header>Resolved URI</header>
+            <div class="card_body">
+                <div id="URIpreview">
+                    
+                </div>
+            </div>
+            <footer>
+                <input type="button" class="button primary" value="Confirm URI"/>
+            </footer>
+        </div>
+        
+        <!-- Get the Lat and Long, allow them to use Leaflet to provide, use Leaflet to preview and confirm -->
+        <div id="coordinatesCard" class="card">
+            <header title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually.">Supply a latitude and longitude manually or use the map below.</header>
+            <div class="card_body">
+                <div class="grouped">
+                <label>Latitude</label>
+                <input id="leafLat" step=".000000001" type="number">
+
+                <label>Longitude</label>
+                <input id="leafLong" step=".000000001" type="number">
+                </div>
+                <div title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually." id="leafletPreview" class="col">
+
+                </div>
+            </div>
+            <footer>
+                <input type="button" class="button primary" value="Confirm Coordinates And Create Annotation" />
+                <input type="button" onclick="submitAnno(event)" value="Create Anno"/>
+            </footer>
+        </div>
+        
+        <!--Show the Annotation.ither restart or send off to view   -->
         <h4 title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually.">Map Information</h4>
         <div title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually." id="leafletPreview" class="col"></div>
         <input type="hidden" deer-key="geometry" value="{}">
@@ -29,7 +72,6 @@ and open the template in the editor.
         </div>
         <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
         <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js"></script>
-
         <script>
             var previewMap = L.map('leafletPreview').setView([38.628009, -90.201101], 16)
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -61,10 +103,18 @@ and open the template in the editor.
             }
             previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
         </script>
-        
-        
-        
-        <input type="button" onclick="submitAnno(event)"
+        <!-- -->
+        <div class="card">
+            <header>See your new anno and decide what to do</header>
+            <div class="card_body">
+                <div id="createdAnno"> </div>
+                <div id="redirectOptions"> </div>
+            </div>
+            <footer>
+                <input type="button" class="button primary" value="Restart" />
+                <input type="button" class="button primary" values="Bye Bye" />
+            </footer>
+        </div>
     </body>
     <script>
         

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Coordinate Assertions</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+            integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+            crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+            crossorigin="">
+        </script>
+        <script src="js/leafletHelper.js"></script>  
+        <style>
+           #leafletInstanceContainer { height: 50rem; }
+           #currentCoords{
+               font-weight: bold;
+           }
+        </style>
+    </head>
+    <body>
+        <p> Supply a latitude and longitude to fly to.  If you added a point, you should see it here. </p>
+        <p> You are at coordinates <span id="currentCoords">[12,12]</span> </p>
+        <label>Latitude</label><input id="leafLat" type="number" />
+        <label>Longitude</label><input id="leafLong" type="number" />
+        <input value="Go To Coordinates" type="button" class="button primary" onclick="leafy.demo.goToCoords(event)"/>
+        <input value="Refresh Markers" type="button" class="button primary" onclick="leafy.demo.refreshMarkers(event)"/> 
+        <br>
+        <div id="leafletInstanceContainer">
+            
+        </div>
+    </body>
+    <script>
+        let latlong = [12, 12] //default starting coords
+        //let latlang = [38.6360699, -90.2348349] //SLU in lat,long order
+        let historyWildcard = {"$exists":true, "$size":0}
+        let queryObj = {
+            "__rerum.history.next": historyWildcard,
+            "madeByUser" : "BryGuy",
+            "madeByApp"  : "MapDemo"
+        }
+        fetch(leafy.URLS.QUERY, {
+            method: "POST",
+            mode: "cors",
+            body: JSON.stringify(queryObj)
+        })
+        .then(response => response.json())
+        .then(geoMarkers => {
+            let geos = geoMarkers.map(anno => { return anno.body })
+            leafy.demo.initializeDemoMap(latlong, geos)
+        })
+        .catch(err => {leafy.demo.initializeDemoMap(latlong, [])})
+        
+    </script>
+</html>
