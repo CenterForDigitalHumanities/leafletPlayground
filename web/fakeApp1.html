@@ -6,12 +6,31 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>App 1</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+        <script src="js/leafletHelper.js"></script>
     </head>
     <body>
-        <div>TODO write content</div>
+        <h3> Supply an existing object URI.  Then supply a latitude and longitude. Then Submit.</h3>
+
+        <label>
+            URI to assert coordinates for.  The coordinate data will contain some information from this item, if possible. 
+            Visit <a target="_blank" href="demoview.html">this page</a> to see all coordinate assertions. 
+        </label>
+        <input id="objURI" type="text" />
+        <!--<input type="button" class="button primary" value="Resolve URI" onclick="getTargetProperties(event)"/>-->
+        <br>
+ 
+        <div class="grouped">
+            <label>Latitude</label>
+            <input id="leafLat" step=".000000001" type="number"/>
+
+            <label>Longitude</label>
+            <input id="leafLong" step=".000000001" type="number"/>
+        </div>
+        <input type="button" class="button primary" value="Create Coordinate Annotation" onclick="submitAnno(event)"
     </body>
     <script>
         

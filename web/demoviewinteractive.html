@@ -24,7 +24,7 @@ and open the template in the editor.
            }
         </style>
     </head>
-    <body>
+    <body class="container">
         <p> Supply a latitude and longitude to fly to.  If you added a point, you should see it here. </p>
         <p> You are at coordinates <span id="currentCoords">[12,12]</span> </p>
         <label>Latitude</label><input id="leafLat" type="number" />
@@ -39,23 +39,142 @@ and open the template in the editor.
     <script>
         let latlong = [12, 12] //default starting coords
         //let latlang = [38.6360699, -90.2348349] //SLU in lat,long order
-        let historyWildcard = {"$exists":true, "$size":0}
-        let queryObj = {
-            "__rerum.history.next": historyWildcard,
-            "madeByUser" : "BryGuy",
-            "madeByApp"  : "MapDemo"
-        }
-        fetch(leafy.URLS.QUERY, {
-            method: "POST",
-            mode: "cors",
-            body: JSON.stringify(queryObj)
-        })
-        .then(response => response.json())
-        .then(geoMarkers => {
-            let geos = geoMarkers.map(anno => { return anno.body })
+        initializePage()
+        async function initializePage(){
+            let historyWildcard = {"$exists":true, "$size":0}
+            let geoWildcard = {"$exists":true}
+            let geos = []
+            //For my map demo app
+            let mapDemoQueryObj = {
+                "__rerum.history.next": historyWildcard,
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo"
+            }
+            let mapDemoGeos = await fetch(leafy.URLS.QUERY, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(mapDemoQueryObj)
+            })
+            .then(response => response.json())
+            .then(geoMarkers => {
+               return geoMarkers.map(anno => { return anno.body })
+            })
+            .catch(err => {return []})
+            
+            
+            //for my LR app
+            let LRDemoQueryObj = {
+                "__rerum.history.next": {"$exists":true, "$size":0},
+                "creator" : "testMachine", //Bryan in LR
+                "type"  : "Annotation",
+                "body.geometry" : {"$exists":true}
+            }
+            let LRDemoGeos = await fetch(leafy.URLS.QUERY, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(LRDemoQueryObj)
+            })
+            .then(response => response.json())
+            .then(geoMarkers => {
+               return geoMarkers.filter(anno => {
+                   return anno.body.geometry.hasOwnProperty("value") && Object.keys(anno.body.geometry.value).length > 0
+               })
+            })
+            .then(async function(geos) {
+                let targetObjDescription, targetObjLabel = ""
+                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown"}
+                let allGeos = await geos.map(async function(anno){ 
+                    let targetObj = await fetch(anno.target)
+                        .then(resp => resp.json())
+                        .catch(err => {return null})
+                    if(targetObj){
+                        targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
+                        targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
+                        targetProps = {"@id":anno.target, "label":targetObjLabel, "description":targetObjDescription}
+                    }
+                    else{
+                        alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                    }
+                    return {"properties":targetProps, "type":"Feature", "geometry":anno.body.geometry.value} 
+                })
+                return Promise.all(allGeos)
+            })
+            
+           
+            //For fake app 1
+            let mapDemoQueryObj2 = {
+                "__rerum.history.next": historyWildcard,
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo_2"
+            }
+            let mapDemoGeos_2 = await fetch(leafy.URLS.QUERY, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(mapDemoQueryObj2)
+            })
+            .then(response => response.json())
+            .then(geoMarkers => {
+               return geoMarkers.map(anno => { return anno.body })
+            })
+            .catch(err => {return []})
+            
+            //For Fake App 2
+            let mapDemoQueryObj3 = {
+                "__rerum.history.next": historyWildcard,
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo_3"
+            }
+            let mapDemoGeos_3 = await fetch(leafy.URLS.QUERY, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(mapDemoQueryObj3)
+            })
+            .then(response => response.json())
+            .then(geoMarkers => {
+               return geoMarkers.map(anno => { return anno.body })
+            })
+            .catch(err => {return []})
+           
+            //For fake app 3
+            let mapDemoQueryObj4 = {
+                "__rerum.history.next": historyWildcard,
+                "madeByUser" : "BryGuy",
+                "madeByApp"  : "MapDemo_4"
+            }
+            let mapDemoGeos_4 = await fetch(leafy.URLS.QUERY, {
+                method: "POST",
+                mode: "cors",
+                body: JSON.stringify(mapDemoQueryObj4)
+            })
+            .then(response => response.json())
+            .then(geoMarkers => {
+               return geoMarkers.map(anno => { return anno.body })
+            })
+            .catch(err => {return []})
+            
+            //Combine all the corrdinates recieved into one array
+            geos = [...mapDemoGeos, ...LRDemoGeos, ...mapDemoGeos_2, ...mapDemoGeos_3, ...mapDemoGeos_4]
             leafy.demo.initializeDemoMap(latlong, geos)
-        })
-        .catch(err => {leafy.demo.initializeDemoMap(latlong, [])})
+        }
+        
+        async function getTargetProperties(target){
+            targetProps["@id"] = target
+            let targetObjDescription = "Unknown"
+            let targetObjLabel = "Unknown"
+            let targetObj = await fetch(target)
+                .then(resp => resp.json())
+                .catch(err => {return null})
+            if(targetObj){
+                targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
+                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
+                targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription}
+                return targetProps
+            }
+            else{
+                alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                return targetProps
+            }
+        } 
         
     </script>
 </html>
