@@ -110,6 +110,9 @@
             leafy.mymap.on('click', leafy.util.onMapClick)
         }
         
+        
+        
+        
         leafy.demo.initializeDemoMap = async function(coords, geoMarkers){
             leafy.mymap = L.map('leafletInstanceContainer')   
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
@@ -232,6 +235,9 @@
             .then(newObj => {return newObj.new_obj_state})
             console.log(createdObj)
         }
+        
+        
+        
             
         leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
