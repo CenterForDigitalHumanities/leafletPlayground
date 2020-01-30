@@ -176,7 +176,7 @@ and open the template in the editor.
                 targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                 targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
                 targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription}
-                URIpreview.innerHTML=`<pre>${targetObj}</pre>`
+                URIpreview.innerHTML=`<pre>${JSON.stringify(targetObj,null,'\t')}</pre>`
             }
             else{
                 alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.  Supply a different URI to try again.")
