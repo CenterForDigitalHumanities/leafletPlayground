@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!--
+    In this scenario, the id of the entity being updates (could be external to RERUM) is offered as the deer-id of the form and the things inside the form become annotations on that deer-id.
+    -->
+<html>
+
+<head>
+    <title>Lived Religions events</title>
+    <meta charset="UTF-8">
+    <!--     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+    
+    <style>
+        #leafletPreview {
+            height: 20rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="text-primary">Create a New Coordinate Annotation</h2>
+        <h4>Annotation Target</h4>
+        <label title="Provide the URI of the item the annotation will target.">Provide Target URI To Continue.</label>
+        <input id="annotationTarget" type="text" title="Provide the URI of the item the annotation will target.">
+        <input type="button" value="Continue With This URI" onclick="provideTarget(event)" />
+        <div class="card bd-primary">
+            <div class="card_body">
+                <form id="newCoordinateAnno" deer-id="" >
+                    <input type="hidden" deer-key="madeByApp" value="MapDemo"/>
+                    <input type="hidden" deer-key="madeByUser" value="BryGuy"/>
+                    <input id="bodyInput" type="hidden" deer-key="body" value="{}"/>
+                    
+                    <h4>Annotation Reasoning</h4>
+                    <label title="Provide a short decription of the reason for this annotation.">Description</label>
+                    <textarea title="Provide a short decription of the reason for this annotation." deer-key="description"></textarea>
+                    
+                    <h4 title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually.">Coordinates Information</h4>
+                    <div title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually." id="leafletPreview" class="col"></div>
+                    <div class="grouped">
+                        <label>Latitude</label>
+                        <input id="leafLat" step=".000000001" type="number">
+
+                        <label>Longitude</label>
+                        <input id="leafLong" step=".000000001" type="number">
+                    </div>
+
+                    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
+                    <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js"></script>
+
+                    <script>
+                        var previewMap = L.map('leafletPreview').setView([38.628009, -90.201101], 16)
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        }).addTo(previewMap);
+                        var osmb = new OSMBuildings(previewMap).load('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json')
+                        function updateGeometry(event, clickedLat, clickedLong) {
+                            event.preventDefault()
+                            if (clickedLong > -180) {
+                                leafLat.value = parseInt(clickedLat * 1000000) / 1000000
+                                leafLong.value = parseInt(clickedLong * 1000000) / 1000000
+                            }
+                            let geometryInput = document.querySelector("input[deer-key='geometry']")
+                            let lat = parseInt(leafLat.value * 1000000) / 1000000
+                            let long = parseInt(leafLong.value * 1000000) / 1000000
+                            if (lat && long) {
+                                previewMap.setView([lat, long], 18)
+                                let geometry = {
+                                    type: "Point",
+                                    coordinates: [long, lat]
+                                }
+                                let bodySoFar = JSON.parse(bodyInput.value)
+                                bodySoFar.geometry = geometry
+                                bodyInput.value = JSON.stringify(bodySoFar)
+                            }
+                        }
+                        document.getElementById("leafLat").oninput = updateGeometry
+                        document.getElementById("leafLong").oninput = updateGeometry
+                        previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
+                    </script>    
+                    
+                    <!--                    
+                    <h4>Coordinates Label</h4>
+                    <label title="Provide the URI of the item the annotation will target.">Label</label>
+                    <input type="text" title="Provide a label that represents the coordinates you provided." onchange="updateCoordinateProps(event)">
+                    
+                    <h4>Coordinates Description</h4>
+                    <label title="Provide a short decription of the coordinates provided with otherwise unprovided or disambiguating details.">Abstract</label>
+                    <textarea title="Provide a short decription of the coordinates provided with otherwise unprovided or disambiguating details." onchange="updateCoordinateProps(event)"></textarea>
+                    -->
+                    
+                    <input type="submit" value="Save Coordinate Annotation"/>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card_body">
+                <h3>Most Recent Submitted Info</h3>
+                <deer-view deer-listening="newCoordinateAnno">
+                </deer-view>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function provideTarget(event){
+            let target = document.getElementById('annotationTarget').value
+            if(target){
+                newCoordinateAnno.setAttribute("deer-id", target)
+            }
+            else{
+                return false
+            }
+            let propertiesInput = document.querySelector("input[deer-key='properties']")
+            let targetObjDescription = "Unknown"
+            let targetObjLabel = "Unknown"
+            let properties = {"properties":{"label":targetObjLabel, "description":targetObjDescription}}
+            let targetObj = await fetch(target)
+                .then(resp => resp.json())
+                .catch(err => {return null})
+            if(targetObj){
+                targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
+                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
+                properties = {"type":"Feature","properties":{"label":targetObjLabel, "description":targetObjDescription}}
+                bodyInput.value = JSON.stringify(properties)
+            }
+            else{
+                alert("This target cannot be resolved.  The annotation will be applied but certain information will be unknown.")
+                bodyInput.value = JSON.stringify(properties)
+            }
+        } 
+        
+        addEventListener('deer-created', event => {
+            //LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Added!`, true)
+        })
+        
+        addEventListener('deer-updated', event => {
+            //LR.ui.globalFeedbackBlip(event, `Location '${event.detail.name}' Information Updated!`, true)
+        })
+    </script>
+    <script src="./js/deerInitializer.js" type="module"></script>
+    <script src="./js/leafletHelper.js" ></script>
+    
+</body>
+
+</html>

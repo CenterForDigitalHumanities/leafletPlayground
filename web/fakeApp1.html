@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>T-PEN Coordinates Annotation</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+        <script src="js/leafletHelper.js"></script>
+    </head>
+    <body>
+        <h3> Supply an existing object URI.  Then supply a latitude and longitude. Then Submit.</h3>
+
+        <label>
+            URI to assert coordinates for.  The coordinate data will contain some information from this item, if possible. 
+            Visit <a target="_blank" href="demoview.html">this page</a> to see all coordinate assertions. 
+        </label>
+        <input id="objURI" type="text" />
+        <!--<input type="button" class="button primary" value="Resolve URI" onclick="getTargetProperties(event)"/>-->
+        <br>
+ 
+        <div class="grouped">
+            <label>Latitude</label>
+            <input id="leafLat" step=".000000001" type="number"/>
+
+            <label>Longitude</label>
+            <input id="leafLong" step=".000000001" type="number"/>
+        </div>
+        <input type="button" class="button primary" value="Create Coordinate Annotation" onclick="submitAnno(event)"
+    </body>
+    <script>
+        
+        let geo = {
+            "type": "Point",
+            "coordinates": [] //let latlang = [38.6360699, -90.2348349] SLU
+        }
+        
+        let targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"T-PEN", "isIIIF":false}
+        
+        function updateGeometry(event, clickedLat, clickedLong) {
+            event.preventDefault()
+            let lat = parseInt(leafLat.value * 1000000) / 1000000
+            let long = parseInt(leafLong.value * 1000000) / 1000000
+            if (lat && long) {
+                let geometry = {
+                    type: "Point",
+                    coordinates: [long, lat]
+                }
+                geo = geometry
+            }
+        }
+        
+        document.getElementById("leafLat").oninput = updateGeometry
+        document.getElementById("leafLong").oninput = updateGeometry
+        
+        async function getTargetProperties(event){
+            let target = document.getElementById('objURI').value
+            let isIIIF = false
+            targetProps["@id"] = target
+            let targetObjDescription = "Unknown"
+            let targetObjLabel = "Unknown"
+            let targetObj = await fetch(target)
+                .then(resp => resp.json())
+                .catch(err => {return null})
+            if(targetObj){
+                if(targetObj["@context"]){
+                    isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json"
+                }
+                targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
+                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
+                targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"T-PEN", "isIIIF":isIIIF}
+                return targetProps
+            }
+            else{
+                alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                return targetProps
+            }
+        } 
+        
+        async function submitAnno(event){
+            let geoJSON = {
+                "properties":targetProps,
+                "geometry": geo,
+                "type": "Feature"
+            }
+            let targetURL = document.getElementById('objURI').value
+            if(targetURL){
+                let props = await getTargetProperties(targetURL)
+                geoJSON.properties = props
+                let demoAnno = 
+                {
+                    "type":"Annotation",
+                    "@context":"http://www.w3.org/ns/anno.jsonld",
+                    "target":targetURL,   
+                    "body":geoJSON,
+                    "madeByUser" : "BryGuy",
+                    "madeByApp"  : "T-PEN"
+                }
+
+                let createdObj = await fetch(leafy.URLS.CREATE, {
+                    method: "POST",
+                    mode: "cors",
+                    body: JSON.stringify(demoAnno)
+                })
+                .then(response => response.json())
+                .then(newObj => {return newObj.new_obj_state})
+                alert("A coordinate annotation was created that targets "+targetURL+".  Enter new coordinates to create another.")
+            }
+            else{
+                alert("The annotation was not created.  You must supply a URI for this annotation to target.")
+                return false
+            }
+           
+        }
+        
+
+    </script>
+</html>

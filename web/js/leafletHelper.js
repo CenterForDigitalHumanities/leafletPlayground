@@ -6,6 +6,16 @@
 
         let leafy = {}
         
+        leafy.demo = {}
+        
+        leafy.URLS = {
+            BASE_ID: "http://devstore.rerum.io/v1",
+            DELETE: "http://tinydev.rerum.io/app/delete",
+            CREATE: "http://tinydev.rerum.io/app/create",
+            UPDATE: "http://tinydev.rerum.io/app/update",
+            QUERY: "http://tinydev.rerum.io/app/query",
+            OVERWRITE: "http://tinydev.rerum.io/app/overwrite"
+        }
         
         leafy.mymap = ""
         leafy.util = {}
@@ -69,27 +79,27 @@
             return(false);
         }
         
-        leafy.util.readInParshPolygons = async function(){
-            let polygons = await fetch('/geo-data/parishes.geojson')
+        leafy.util.readInParishPolygons = async function(){
+            let polygons = await fetch('./geo-data/parishes.geojson')
             .then(response => response.text())
             polygons = JSON.parse(polygons)
             return polygons
         }
         
         leafy.util.initializeParishesMap = async function(coords){
-            leafy.mymap = L.map('leafletInstanceContainer').setView(coords, 10)    
+            leafy.mymap = L.map('leafletInstanceContainer')    
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 100,
             id: 'mapbox.satellite', //mapbox.streets
             accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
             }).addTo(leafy.mymap);
-            leafy.mymap.setView(coords,18);
+            leafy.mymap.setView(coords,8);
 
             let geoMarkers = await leafy.util.readInParishPolygons() //Need to load the data from /geo-data/parishes.geojson 
             let myStyle = {
                 "color": "#ff7800",
-                "weight": 5,
+                "weight": 2,
                 "opacity": 0.65
             }
 
@@ -99,7 +109,78 @@
             
             leafy.mymap.on('click', leafy.util.onMapClick)
         }
-            
+        
+        leafy.demo.initializeDemoMap = async function(coords, geoMarkers){
+            leafy.mymap = L.map('leafletInstanceContainer')   
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 100,
+            id: 'mapbox.satellite', //mapbox.streets
+            accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
+            }).addTo(leafy.mymap);
+            leafy.mymap.setView(coords,8);
+
+            L.geoJSON(geoMarkers, {
+		pointToLayer: function (feature, latlng) {
+                    let appColor = "#336699"
+                    let creating_app = feature.properties.madeByApp ? feature.properties.madeByApp : "Unknown"
+                    switch(creating_app){
+                        case "MapDemo":
+                            appColor = "#336699"
+                        break
+                        case "Lived_Religion":
+                            appColor = "#00cc00"
+                        break
+                        case "T-PEN":
+                            appColor = "#ff9900"
+                        break
+                        case "Mirador":
+                            appColor = "#ff3333"
+                        break
+                        case "IIIF_Coordinates_Annotator":
+                            appColor = "#800060"
+                        break
+                        default:
+                            appColor = "red"
+                    }
+                    return L.circleMarker(latlng, {
+                        radius: 8,
+                        fillColor: appColor,
+                        color: "#000",
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+		onEachFeature: leafy.demo.pointEachFeature
+            }).addTo(leafy.mymap)
+        }
+        
+        leafy.demo.pointEachFeature = function (feature, layer) {
+            //@id, label, description
+            layer.hasMyPoints = true
+            layer.isHiding = false
+            let popupContent = ""
+            if (feature.properties) {
+                if(feature.properties.label) {
+                    popupContent += `<h6>${feature.properties.label}</h6>`
+                }
+                if(feature.properties["@id"]) {
+                    popupContent += `<p> <a target='_blank' href='${feature.properties["@id"]}'>See Data Artifact</a></p>`
+                }
+                if(feature.properties.description) {
+                    popupContent += `<p>${feature.properties.description}</p>`
+                }
+                if(feature.properties.madeByApp) {
+                    popupContent += `<p>Annotation Generated By ${feature.properties.madeByApp}</p>`
+                }
+                if(feature.properties.isIIIF){
+                    popupContent += `<p>This target is IIIF!</p>`
+                }
+            }
+            layer.bindPopup(popupContent);
+	}
+                 
         leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
             let geoAnno, features
@@ -120,42 +201,39 @@
             accessToken: 'pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ'
             }).addTo(leafy.mymap);
             
-            //Or just use the whole geo anno if you have formed it right...
-             
-            
-            // let tom = {
-            //         "properties": {
-            //             "name": "SLU Test",
-            //             "amenity": "Outside SLU",
-            //             "popupContent": "This is for our SLU test",
-            //             "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e",
-            //             "cemProjLink" : "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
-            //         },
-            //         "geometry": {
-            //             "type": "Point",
-            //             "coordinates": [-90.2348,38.636524]
-            //         },
-            //         "type": "Feature",
-            //         "id":1
-            //     }
+             let tom = {
+                     "properties": {
+                         "name": "SLU Test",
+                         "amenity": "Outside SLU",
+                         "popupContent": "This is for our SLU test",
+                         "openDataID" : "http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e",
+                         "cemProjLink" : "http://cemetery.rerum.io/mcelwee/annotationPage.html?personURL=http://devstore.rerum.io/v1/id/5bc7f853e4b09992fca2220e"
+                     },
+                     "geometry": {
+                         "type": "Point",
+                         "coordinates": [-90.2348,38.636524]
+                     },
+                     "type": "Feature",
+                     "id":1
+                 }
 
-                let brit = {
-                    "properties": {
-                        "name": "Something for Brittany",
-                        "amenity": "At WWT in Maryland Heights",
-                        "popupContent": "Bryan loves Brittany",
-                        "openDataID" : "",
-                        "cemProjLink" : "https://www.slsc.org/exhibits-attractions/pompeii-the-exhibition/"
-                    },
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [-90.449255, 38.702154]
-                    },
-                    "type": "Feature",
-                    "id":1
-                }
+//                let brit = {
+//                    "properties": {
+//                        "name": "Something for Brittany",
+//                        "amenity": "At WWT in Maryland Heights",
+//                        "popupContent": "Bryan loves Brittany",
+//                        "openDataID" : "",
+//                        "cemProjLink" : "https://www.slsc.org/exhibits-attractions/pompeii-the-exhibition/"
+//                    },
+//                    "geometry": {
+//                        "type": "Point",
+//                        "coordinates": [-90.449255, 38.702154]
+//                    },
+//                    "type": "Feature",
+//                    "id":1
+//                }
                      
-            L.geoJSON(brit, {
+            L.geoJSON(tom, {
 		pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, {
                             radius: 8,
