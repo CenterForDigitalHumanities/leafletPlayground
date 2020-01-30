@@ -176,6 +176,7 @@ and open the template in the editor.
                 targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                 targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
                 targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription}
+                delete targetObj["__rerum"]
                 URIpreview.innerHTML=`<pre>${JSON.stringify(targetObj,null,'\t')}</pre>`
             }
             else{
