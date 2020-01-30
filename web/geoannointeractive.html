@@ -151,7 +151,7 @@ and open the template in the editor.
             let createdObj = await fetch(leafy.URLS.CREATE, {
                 method: "POST",
                 mode: "cors",
-                body: JSON.stringify(demoAnno)
+                body: JSON.stringify(demoAnno,null,'\t')
             })
             .then(response => response.json())
             .then(newObj => {
@@ -207,7 +207,7 @@ and open the template in the editor.
                         "madeByApp"  : "MapDemo_2"
                     }
                 createAnnotation.classList.remove("is-hidden")
-                annoPreview.innerHTML = `<pre>${JSON.stringify(demoAnno)}</pre>`
+                annoPreview.innerHTML = `<pre>${JSON.stringify(demoAnno,null,'\t')}</pre>`
             }
             else{
                 alert("You must provide a latitude and a longitude to continue")
