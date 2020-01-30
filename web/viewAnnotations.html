@@ -63,7 +63,7 @@ and open the template in the editor.
             </div>
             <footer>
                 <input value="Go To Coordinates" type="button" class="tag is-small" onclick="leafy.demo.goToCoords(event)"/>
-                <input value="Refresh Markers" type="button" class="tag is-small" onclick="leafy.demo.refreshMarkers(event)"/> 
+                <!--<input value="Refresh Markers" type="button" class="tag is-small" onclick="leafy.demo.refreshMarkers(event)"/>--> 
             </footer>
         </div>
         <br><br>
@@ -71,11 +71,11 @@ and open the template in the editor.
         <div id="leafletInstanceContainer"></div>
         <div class="col">
             <div class="row">
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color1" value="Demo" />
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color2" value="Lived Religion" />
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color3" value="T-PEN" />
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color4" value="Mirador" />
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color5" value="IIIF App" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color1" value="Demo" app="MapDemo" onclick="leafy.demo.filterMarkers(event)"/>
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color2" value="Lived Religion" app="Lived_Religion" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color3" value="T-PEN"  app="T-PEN" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color4" value="Mirador" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color5" value="IIIF_Coordinates_Annotator" onclick="leafy.demo.filterMarkers(event)" />
             </div>
         </div>
 
@@ -215,6 +215,7 @@ and open the template in the editor.
         }
         
         leafy.demo.refreshMarkers = async function(){
+            //Gotta get em all...
             let historyWildcard = {"$exists":true, "$size":0}
             let queryObj = {
                 "__rerum.history.next": historyWildcard,
@@ -240,9 +241,30 @@ and open the template in the editor.
 
             L.geoJSON(geoMarkers, {
 		pointToLayer: function (feature, latlng) {
+                    let appColor = "#336699"
+                    let creating_app = feature.properties.madeByApp ? feature.properties.madeByApp : "Unknown"
+                    switch(creating_app){
+                        case "MapDemo":
+                            appColor = "#336699"
+                        break
+                        case "Lived_Religion":
+                            appColor = "#00cc00"
+                        break
+                        case "T-PEN":
+                            appColor = "#ff9900"
+                        break
+                        case "Mirador":
+                            appColor = "#ff3333"
+                        break
+                        case "IIIF_Coordinates_Annotator":
+                            appColor = "#800060"
+                        break
+                        default:
+                            appColor = "red"
+                    }
                     return L.circleMarker(latlng, {
                         radius: 8,
-                        fillColor: "#ff7800",
+                        fillColor: appColor,
                         color: "#000",
                         weight: 1,
                         opacity: 1,
@@ -251,6 +273,52 @@ and open the template in the editor.
                 },
 		onEachFeature: leafy.demo.pointEachFeature
             }).addTo(leafy.mymap)
+        }
+        
+        leafy.demo.filterMarkers = async function(event){
+            let app = event.target.getAttribute("app")
+            leafy.mymap.eachLayer(function(layer) {
+                if ( layer.hasMyPoints ) {
+                    //remove [pomts nased pm a point.madeByApp property
+                    if(layer.feature.properties && layer.feature.properties.madeByApp && layer.feature.properties.madeByApp === app){
+                        if(layer.isHiding){
+                            layer.isHiding = false
+                            let creating_app = layer.feature.properties.madeByApp ? layer.feature.properties.madeByApp : "Unknown"
+                            let appColor = ""
+                            switch(creating_app){
+                                case "MapDemo":
+                                    appColor = "#336699"
+                                break
+                                case "Lived_Religion":
+                                    appColor = "#00cc00"
+                                break
+                                case "T-PEN":
+                                    appColor = "#ff9900"
+                                break
+                                case "Mirador":
+                                    appColor = "#ff3333"
+                                break
+                                case "IIIF_Coordinates_Annotator":
+                                    appColor = "#800060"
+                                break
+                                default:
+                                    appColor = "red"
+                            }
+                            layer.setStyle({
+                                color: "#000",
+                                fillColor : appColor
+                            })
+                        }
+                        else{
+                            layer.isHiding = true 
+                            layer.setStyle({
+                                color: 'rgba(0,0,0,0)',
+                                fillColor : 'rgba(0,0,0,0)'
+                            })
+                        }
+                    }
+                }
+            })
         }
         
     </script>

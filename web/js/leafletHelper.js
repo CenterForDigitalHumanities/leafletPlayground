@@ -159,6 +159,7 @@
         leafy.demo.pointEachFeature = function (feature, layer) {
             //@id, label, description
             layer.hasMyPoints = true
+            layer.isHiding = false
             let featureText = feature.properties["@id"]
             let popupContent = ""
             if (feature.properties && feature.properties.label) {
