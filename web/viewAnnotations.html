@@ -9,29 +9,78 @@ and open the template in the editor.
         <title>Coordinate Assertions</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/chota@latest">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
         <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
         <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js"></script>
         <script src="js/leafletHelper.js"></script>  
         <style>
-           #leafletInstanceContainer { height: 40em; }
+           #leafletInstanceContainer { height: 44em; }
            #currentCoords{
                font-weight: bold;
            }
+           
+           .color1{
+               background-color: #336699;
+           }
+           
+           .color2{
+               background-color: #00cc00;
+           }
+           
+           .color3{
+               background-color: #ff9900;
+           }
+           
+           .color4{
+               background-color: #ff3333;
+           }
+           
+           .color5{
+               background-color: #800060;
+           }
+           
+           .tag{
+               color:white;
+           }
+           
+           .grouped input{
+                   height: 1.5em;
+                    width: 5em !important;
+            }
+           
         </style>
     </head>
+    
     <body class="container">
-        <p> Supply a latitude and longitude to fly to.  If you added a point, you should see it here. </p>
-        <p> You are at coordinates <span id="currentCoords">[12,12]</span> </p>
-        <label>Latitude</label><input id="leafLat" type="number" />
-        <label>Longitude</label><input id="leafLong" type="number" />
-        <input value="Go To Coordinates" type="button" class="button primary" onclick="leafy.demo.goToCoords(event)"/>
-        <input value="Refresh Markers" type="button" class="button primary" onclick="leafy.demo.refreshMarkers(event)"/> 
-        <br>
-        <div id="leafletInstanceContainer">
-            
+        <div class="card">
+            <header>Supply a latitude and longitude to fly to.  If you added a point near the supplied coordinates, you will see it on the map.</header>
+            <div class="card_body">
+                <div class="grouped">
+                    <label>Latitude</label><input id="leafLat" type="number" />
+                    <label>Longitude</label><input id="leafLong" type="number" />
+                </div>
+            </div>
+            <footer>
+                <input value="Go To Coordinates" type="button" class="tag is-small" onclick="leafy.demo.goToCoords(event)"/>
+                <input value="Refresh Markers" type="button" class="tag is-small" onclick="leafy.demo.refreshMarkers(event)"/> 
+            </footer>
         </div>
+        <br><br>
+        <p> Last Supplied Coordinates <span id="currentCoords">[12,12]</span> </p>
+        <div id="leafletInstanceContainer"></div>
+        <div class="col">
+            <div class="row">
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color1" value="Demo" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color2" value="Lived Religion" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color3" value="T-PEN" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color4" value="Mirador" />
+                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color5" value="IIIF App" />
+            </div>
+        </div>
+
     </body>
+    
     <script>
         let latlong = [12, 12] //default starting coords
         //let latlang = [38.6360699, -90.2348349] //SLU in lat,long order
@@ -53,7 +102,9 @@ and open the template in the editor.
             })
             .then(response => response.json())
             .then(geoMarkers => {
-               return geoMarkers.map(anno => { return anno.body })
+               return geoMarkers.map(anno => { 
+                   return anno.body
+                })
             })
             .catch(err => {return []})
             
@@ -78,15 +129,16 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown"}
+                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown", "madeByApp" : "Lived_Religion"}
                 let allGeos = await geos.map(async function(anno){ 
                     let targetObj = await fetch(anno.target)
                         .then(resp => resp.json())
                         .catch(err => {return null})
                     if(targetObj){
-                        targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
-                        targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
-                        targetProps = {"@id":anno.target, "label":targetObjLabel, "description":targetObjDescription}
+                        //This application created its annos aa bit differently, so we have to shim the output here.  
+                        targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
+                        targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
+                        targetProps = {"@id":anno.target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Lived_Religion"}
                     }
                     else{
                         alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
@@ -153,24 +205,6 @@ and open the template in the editor.
             leafy.demo.initializeDemoMap(latlong, geos)
         }
         
-        async function getTargetProperties(target){
-            targetProps["@id"] = target
-            let targetObjDescription = "Unknown"
-            let targetObjLabel = "Unknown"
-            let targetObj = await fetch(target)
-                .then(resp => resp.json())
-                .catch(err => {return null})
-            if(targetObj){
-                targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
-                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
-                targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription}
-                return targetProps
-            }
-            else{
-                alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
-                return targetProps
-            }
-        } 
         
         leafy.demo.goToCoords = function(event){
             if(leafLat.value && leafLong.value){

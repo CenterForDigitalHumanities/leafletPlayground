@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>App 3</title>
+        <title>IIIF Coordinates Annotation</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://unpkg.com/chota@latest">
@@ -39,7 +39,7 @@ and open the template in the editor.
             "coordinates": [] //let latlang = [38.6360699, -90.2348349] SLU
         }
         
-        let targetProps = {"label":"Unknown","description":"Unknown", "@id":""}
+        let targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":false}
         
         function updateGeometry(event, clickedLat, clickedLong) {
             event.preventDefault()
@@ -59,6 +59,7 @@ and open the template in the editor.
         
         async function getTargetProperties(event){
             let target = document.getElementById('objURI').value
+            let isIIIF = false
             targetProps["@id"] = target
             let targetObjDescription = "Unknown"
             let targetObjLabel = "Unknown"
@@ -66,9 +67,12 @@ and open the template in the editor.
                 .then(resp => resp.json())
                 .catch(err => {return null})
             if(targetObj){
+                if(targetObj["@context"]){
+                    isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json"
+                }
                 targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
                 targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
-                targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription}
+                targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":isIIIF}
                 return targetProps
             }
             else{
@@ -94,7 +98,7 @@ and open the template in the editor.
                     "target":targetURL,   
                     "body":geoJSON,
                     "madeByUser" : "BryGuy",
-                    "madeByApp"  : "IIIF_Coordinates_Annotator"
+                    "madeByApp":"IIIF_Coordinates_Annotator"
                 }
 
                 let createdObj = await fetch(leafy.URLS.CREATE, {

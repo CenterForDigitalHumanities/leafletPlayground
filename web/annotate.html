@@ -109,7 +109,7 @@ and open the template in the editor.
             "type": "Point",
             "coordinates": [] //let latlang = [38.6360699, -90.2348349] SLU
         }
-        let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":""}      
+        let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"", "madeByApp" : "MapDemo"}      
         
         
         async function getTargetProperties(event){
@@ -205,7 +205,7 @@ and open the template in the editor.
                         "target":targetProps["@id"],   
                         "body":geoJSON,
                         "madeByUser" : "BryGuy",
-                        "madeByApp"  : "MapDemo_2"
+                        "madeByApp"  : "MapDemo"
                     }
                 createAnnotation.classList.remove("is-hidden")
                 annoPreview.innerHTML = `<pre>${JSON.stringify(demoAnno,null,'\t')}</pre>`
