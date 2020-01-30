@@ -110,9 +110,6 @@
             leafy.mymap.on('click', leafy.util.onMapClick)
         }
         
-        
-        
-        
         leafy.demo.initializeDemoMap = async function(coords, geoMarkers){
             leafy.mymap = L.map('leafletInstanceContainer')   
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidGhlaGFiZXMiLCJhIjoiY2pyaTdmNGUzMzQwdDQzcGRwd21ieHF3NCJ9.SSflgKbI8tLQOo2DuzEgRQ', {
@@ -154,93 +151,7 @@
             }
             layer.bindPopup(popupContent);
 	}
-        
-        leafy.demo.goToCoords = function(event){
-            if(leafLat.value && leafLong.value){
-                let coords = [leafLat.value, leafLong.value]
-                leafy.mymap.flyTo(coords,8)
-                document.getElementById("currentCoords").innerHTML = coords.toString()
-            }
-        }
-        
-        leafy.demo.refreshMarkers = async function(){
-            let historyWildcard = {"$exists":true, "$size":0}
-            let queryObj = {
-                "__rerum.history.next": historyWildcard,
-                "madeByUser" : "BryGuy",
-                "madeByApp"  : "MapDemo"
-            }
-            
-            let geoMarkers = await fetch(leafy.URLS.QUERY, {
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify(queryObj)
-            })
-            .then(response => response.json())
-            .then(geoMarkers => {
-                return geoMarkers.map(anno => { return anno.body })
-            })
-            
-            leafy.mymap.eachLayer(function(layer) {
-                if ( layer.hasMyPoints ) {
-                    leafy.mymap.removeLayer(layer)
-                }
-            })
-
-            L.geoJSON(geoMarkers, {
-		pointToLayer: function (feature, latlng) {
-                    return L.circleMarker(latlng, {
-                        radius: 8,
-                        fillColor: "#ff7800",
-                        color: "#000",
-                        weight: 1,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    });
-                },
-		onEachFeature: leafy.demo.pointEachFeature
-            }).addTo(leafy.mymap)
-        }
-        
-        leafy.demo.submitAnno = async function(event){
-            let targetURL = document.getElementById('objURL').value
-            let targetObj =  await fetch(targetURL).then(response => response.json())
-            let lat = document.getElementById('lat').value
-            let long = document.getElementById('long').value
-            let targetLabel = targetObj.label ? targetObj.label : targetObj.name? targetObj.name : "Unknown Label"
-            let targetDescription = targetObj.description ? targetObj.description : "No Description"
-            let demoAnno = 
-            {
-                "type":"Annotation",
-                "@context":"http://www.w3.org/ns/anno.jsonld",
-                "target":targetURL,   
-                body:{
-                    "type": "Feature", 
-                    "properties": { 
-                        "label": targetLabel, 
-                        "description": targetDescription
-                    }, 
-                    "geometry": { 
-                        "type": "Point", "coordinates": [long, lat] 
-                    }
-                },
-                "madeByUser" : "BryGuy",
-                "madeByApp"  : "MapDemo"
-            }
-            
-            let createdObj = await fetch(leafy.URLS.CREATE, {
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify(demoAnno)
-            })
-            .then(response => response.json())
-            .then(newObj => {return newObj.new_obj_state})
-            console.log(createdObj)
-        }
-        
-        
-        
-            
+                 
         leafy.util.initializeMap = async function(coords){
             let geoURL = leafy.util.getURLVariable("geo")
             let geoAnno, features
