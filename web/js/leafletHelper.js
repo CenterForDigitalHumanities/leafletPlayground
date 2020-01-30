@@ -156,9 +156,11 @@
 	}
         
         leafy.demo.goToCoords = function(event){
-            let coords = [leafLat.value, leafLong.value]
-            leafy.mymap.flyTo(coords,8)
-            document.getElementById("currentCoords").innerHTML = coords.toString()
+            if(leafLat.value && leafLong.value){
+                let coords = [leafLat.value, leafLong.value]
+                leafy.mymap.flyTo(coords,8)
+                document.getElementById("currentCoords").innerHTML = coords.toString()
+            }
         }
         
         leafy.demo.refreshMarkers = async function(){

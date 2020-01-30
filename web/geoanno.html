@@ -30,7 +30,7 @@ and open the template in the editor.
             <label>Longitude</label>
             <input id="leafLong" step=".000000001" type="number"/>
         </div>
-        <input type="button" class="button primary" value="Create Coordinate Annotation" onclick="submitAnno(event)"
+        <input type="button" class="button primary" value="Create Coordinate Annotation" onclick="submitAnno(event)"/>
     </body>
     <script>
         
@@ -60,14 +60,14 @@ and open the template in the editor.
         async function getTargetProperties(event){
             let target = document.getElementById('objURI').value
             targetProps["@id"] = target
-            let targetObjDescription = "Unknown"
-            let targetObjLabel = "Unknown"
+            let targetObjDescription = "Target Description Unknown"
+            let targetObjLabel = "Target Label Unknown"
             let targetObj = await fetch(target)
                 .then(resp => resp.json())
                 .catch(err => {return null})
             if(targetObj){
-                targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
-                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
+                targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
+                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target LabelUnknown"
                 targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription}
                 return targetProps
             }
