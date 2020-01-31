@@ -20,7 +20,8 @@ and open the template in the editor.
             Visit <a target="_blank" href="demoview.html">this page</a> to see all coordinate assertions. 
         </label>
         <input id="objURI" type="text" />
-        <!--<input type="button" class="button primary" value="Resolve URI" onclick="getTargetProperties(event)"/>-->
+        <!--<input type="button" class="button primary" value="Use This URI" onclick="getTargetProperties(event)"/>-->
+            <input type="button" class="button primary" value="Use This URI" onclick="provideTargetID(event)"/>
         <br>
  
         <div class="grouped">
@@ -39,7 +40,8 @@ and open the template in the editor.
             "coordinates": [] //let latlang = [38.6360699, -90.2348349] SLU
         }
         
-        let targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"Mirador", "isIIIF":false}
+        //let targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"Mirador", "isIIIF":false}
+        let targetProps = {}
         
         function updateGeometry(event, clickedLat, clickedLong) {
             event.preventDefault()
@@ -88,6 +90,23 @@ and open the template in the editor.
             }
         } 
         
+        async function provideTargetID(event){
+            let target = document.getElementById('objURI').value
+            targetProps["@id"] = target
+            let targetObj = await fetch(target)
+                .then(resp => resp.json())
+                .catch(err => {
+                    alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.  Supply a different URI to try again.")
+                    URIpreview.innerHTML=`<pre>{Not Resolvable}</pre>`
+                    return null
+                })
+            if(targetObj){
+                URIpreview.innerHTML=`<pre>${JSON.stringify(targetObj,null,'\t')}</pre>`
+            }
+            confirmURI.classList.remove("is-hidden")
+            return targetProps
+        }
+        
         async function submitAnno(event){
             let geoJSON = {
                 "properties":targetProps,
@@ -96,8 +115,8 @@ and open the template in the editor.
             }
             let targetURL = document.getElementById('objURI').value
             if(targetURL){
-                let props = await getTargetProperties(targetURL)
-                geoJSON.properties = props
+                //let props = await getTargetProperties(targetURL)
+                //geoJSON.properties = props
                 let demoAnno = 
                 {
                     "type":"Annotation",

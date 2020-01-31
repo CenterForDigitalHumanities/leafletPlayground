@@ -154,6 +154,7 @@
                 },
 		onEachFeature: leafy.demo.pointEachFeature
             }).addTo(leafy.mymap)
+            leafletInstanceContainer.style.backgroundImage = "none"
         }
         
         leafy.demo.pointEachFeature = function (feature, layer) {
@@ -168,8 +169,9 @@
                 if(feature.properties.label) {
                     popupContent += `<div class="featureInfo"><label>Target Label:</label>${feature.properties.label}</div>`
                 }
-                if(feature.properties["@id"]) {
-                    popupContent += `<div class="featureInfo"><label> Target URI:</label><a target='_blank' href='${feature.properties["@id"]}'>See Target Data</a></div>`
+                if(feature.properties.targetID || feature.properties["@id"]){
+                    let targetURI = feature.properties["@id"] ? feature.properties["@id"] : feature.properties.targetID ? feature.properties.targetID : ""
+                    popupContent += `<div class="featureInfo"><label> Target URI:</label><a target='_blank' href='${targetURI}'>See Target Data</a></div>`
                 }
                 if(feature.properties.description) {
                     popupContent += `<div class="featureInfo"><label> Target Description:</label>${feature.properties.description}</div>`
