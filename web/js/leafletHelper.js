@@ -155,6 +155,7 @@
 		onEachFeature: leafy.demo.pointEachFeature
             }).addTo(leafy.mymap)
             leafletInstanceContainer.style.backgroundImage = "none"
+            loadingMessage.classList.add("is-hidden")
         }
         
         leafy.demo.pointEachFeature = function (feature, layer) {
