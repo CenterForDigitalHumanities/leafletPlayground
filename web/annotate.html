@@ -155,7 +155,13 @@ and open the template in the editor.
                 .catch(err => {return null})
             if(targetObj){
                 if(targetObj["@context"]){
-                    isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json"
+                    if(Array.isArray(targetObj["@context"])){
+                        isIIIF = targetObj["@context"].includes("http://iiif.io/api/presentation/3/context.json") || targetObj["@context"].includes("http://iiif.io/api/presentation/2/context.json")
+                    }
+                    else if(typeof targetObj["@context"] === "string"){
+                       isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json" 
+                    }
+
                 }
                 targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                 targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"

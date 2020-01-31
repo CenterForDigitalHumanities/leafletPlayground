@@ -138,11 +138,17 @@ and open the template in the editor.
                     if(targetObj){
                         //This application created its annos aa bit differently, so we have to shim the output here.  
                         if(targetObj["@context"]){
-                            isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json"
+                            if(Array.isArray(targetObj["@context"])){
+                                isIIIF = targetObj["@context"].includes("http://iiif.io/api/presentation/3/context.json") || targetObj["@context"].includes("http://iiif.io/api/presentation/2/context.json")
+                            }
+                            else if(typeof targetObj["@context"] === "string"){
+                               isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json" 
+                            }
+                            
                         }
                         targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                         targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                        targetProps = {"@id":anno.target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Lived_Religion", "isIIIF":false}
+                        targetProps = {"@id":anno.target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Lived_Religion", "isIIIF":isIIIF}
                     }
                     else{
                         alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
@@ -324,6 +330,31 @@ and open the template in the editor.
                 }
             })
         }
+        
+        /**
+         * Use Shift + Z to do the zoom out to xsee dots across the globe.
+         */
+        document.addEventListener("keydown", function(event){
+            let key;
+            let isShift;
+            if (window.event) {
+              key = event.keyCode;
+              isShift = !!event.shiftKey; // typecast to boolean
+            } 
+            else {
+              key = event.which;
+              isShift = !!event.shiftKey;
+            }
+            if ( isShift ) {
+                switch (key) {
+                  case 90: 
+                      //Shift + Z will do the zoom out behavior
+                      leafy.mymap.flyTo([12,12],2)
+                    break
+                  default:
+                }
+              }
+        })    
         
     </script>
 </html>
