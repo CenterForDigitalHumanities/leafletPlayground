@@ -167,8 +167,13 @@ and open the template in the editor.
             })
             .then(response => response.json())
             .then(geoMarkers => {
-               return geoMarkers.map(anno => { 
+                return geoMarkers.map(anno => { 
                    anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
+                   //We assume the application that created these coordinates did not apply properties.  
+                   if(!anno.body.hasOwnProperty("properties")){
+                       anno.body.properties = {}
+                   }
+                   anno.body.properties.targetID = anno.target ? anno.target : ""
                    return anno.body
                 })
             })
@@ -278,8 +283,13 @@ and open the template in the editor.
             })
             .then(response => response.json())
             .then(geoMarkers => {
-               return geoMarkers.map(anno => { 
+                return geoMarkers.map(anno => { 
                    anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
+                   //We assume the application that created these coordinates did not apply properties.  
+                   if(!anno.body.hasOwnProperty("properties")){
+                       anno.body.properties = {}
+                   }
+                   anno.body.properties.targetID = anno.target ? anno.target : ""
                    return anno.body
                 })
             })
@@ -300,7 +310,6 @@ and open the template in the editor.
                             else if(typeof targetObj["@context"] === "string"){
                                isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json" 
                             }
-                            
                         }
                         targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                         targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
@@ -333,6 +342,11 @@ and open the template in the editor.
             .then(geoMarkers => {
                return geoMarkers.map(anno => { 
                    anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
+                   //We assume the application that created these coordinates did not apply properties.  
+                   if(!anno.body.hasOwnProperty("properties")){
+                       anno.body.properties = {}
+                   }
+                   anno.body.properties.targetID = anno.target ? anno.target : ""
                    return anno.body
                 })
             })
@@ -386,6 +400,11 @@ and open the template in the editor.
             .then(geoMarkers => {
                return geoMarkers.map(anno => { 
                    anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
+                   //We assume the application that created these coordinates did not apply properties.  
+                   if(!anno.body.hasOwnProperty("properties")){
+                       anno.body.properties = {}
+                   }
+                   anno.body.properties.targetID = anno.target ? anno.target : ""
                    return anno.body
                 })
             })
