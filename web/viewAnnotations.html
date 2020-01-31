@@ -40,13 +40,31 @@ and open the template in the editor.
                background-color: #800060;
            }
            
+           .color6{
+               background-color: #b5a4a3;
+           }
+           
            .tag{
                color:white;
            }
            
            .grouped input{
-                   height: 1.5em;
-                    width: 5em !important;
+                height: 1.5em;
+                width: 5em !important;
+            }
+            
+            .featureInfo{
+                margin: 8px 0px;
+                font-family: monospace;
+            }
+            
+            .featureInfo label{
+                margin-right: 6px;
+                font-family: sans-serif;
+            }
+            
+            .featureCompliance{
+                text-align:center;
             }
            
         </style>
@@ -76,6 +94,7 @@ and open the template in the editor.
                 <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color3" value="T-PEN"  app="T-PEN" onclick="leafy.demo.filterMarkers(event)" />
                 <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color4" value="Mirador" app="Mirador" onclick="leafy.demo.filterMarkers(event)" />
                 <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color5" value="IIIF App" app="IIIF_Coordinates_Annotator" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target IIIF resources." type="button" class="tag is-small color6" value="IIIFy" app="isIIIF" onclick="leafy.demo.filterMarkers(event)" />
             </div>
         </div>
 
@@ -278,7 +297,8 @@ and open the template in the editor.
                         color: "#000",
                         weight: 1,
                         opacity: 1,
-                        fillOpacity: 0.8
+                        fillOpacity: 0.8,
+                        boxShadow: shadow
                     });
                 },
 		onEachFeature: leafy.demo.pointEachFeature
@@ -288,9 +308,16 @@ and open the template in the editor.
         leafy.demo.filterMarkers = async function(event){
             let app = event.target.getAttribute("app")
             leafy.mymap.eachLayer(function(layer) {
+                let skipCheck = false
                 if ( layer.hasMyPoints ) {
                     //remove [pomts nased pm a point.madeByApp property
-                    if(layer.feature.properties && layer.feature.properties.madeByApp && layer.feature.properties.madeByApp === app){
+                    if(app === "isIIIF"){
+                        //Special handler to toggle on this property existing instead of basing it on the creating app (any aapp could have target a IIIF resource).
+                        if(layer.feature.properties && layer.feature.properties.isIIIF){
+                            skipCheck = true
+                        }
+                    }
+                    if(skipCheck || (layer.feature.properties && layer.feature.properties.madeByApp && layer.feature.properties.madeByApp === app)){
                         if(layer.isHiding){
                             layer.isHiding = false
                             let creating_app = layer.feature.properties.madeByApp ? layer.feature.properties.madeByApp : "Unknown"

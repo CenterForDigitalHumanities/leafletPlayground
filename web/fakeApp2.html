@@ -58,6 +58,7 @@ and open the template in the editor.
         document.getElementById("leafLong").oninput = updateGeometry
         
         async function getTargetProperties(event){
+            targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":false}
             let target = document.getElementById('objURI').value
             let isIIIF = false
             targetProps["@id"] = target
