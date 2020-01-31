@@ -58,6 +58,7 @@ and open the template in the editor.
         document.getElementById("leafLong").oninput = updateGeometry
         
         async function getTargetProperties(event){
+            targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":false}
             let target = document.getElementById('objURI').value
             let isIIIF = false
             targetProps["@id"] = target
@@ -68,7 +69,13 @@ and open the template in the editor.
                 .catch(err => {return null})
             if(targetObj){
                 if(targetObj["@context"]){
-                    isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json"
+                    if(Array.isArray(targetObj["@context"])){
+                        isIIIF = targetObj["@context"].includes("http://iiif.io/api/presentation/3/context.json") || targetObj["@context"].includes("http://iiif.io/api/presentation/2/context.json")
+                    }
+                    else if(typeof targetObj["@context"] === "string"){
+                       isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json" 
+                    }
+
                 }
                 targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
                 targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
