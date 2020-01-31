@@ -39,7 +39,8 @@ and open the template in the editor.
             "coordinates": [] //let latlang = [38.6360699, -90.2348349] SLU
         }
         
-        let targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"T-PEN", "isIIIF":false}
+        //let targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"T-PEN", "isIIIF":false}
+        let targetProps = {}
         
         function updateGeometry(event, clickedLat, clickedLong) {
             event.preventDefault()
@@ -96,8 +97,8 @@ and open the template in the editor.
             }
             let targetURL = document.getElementById('objURI').value
             if(targetURL){
-                let props = await getTargetProperties(targetURL)
-                geoJSON.properties = props
+                //let props = await getTargetProperties(targetURL)
+                //geoJSON.properties = props
                 let demoAnno = 
                 {
                     "type":"Annotation",
