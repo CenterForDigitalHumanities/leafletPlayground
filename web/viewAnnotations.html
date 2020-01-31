@@ -66,13 +66,45 @@ and open the template in the editor.
             .featureCompliance{
                 text-align:center;
             }
+            
+            #howTo{
+                font-size: 10pt;
+            }
+            
+            #goToCoords{
+                color: black;
+                border: 1px solid black;
+            }
+            
+            input[app]{
+                margin: 2px 0px 5px 0px;
+            }
            
         </style>
     </head>
     
     <body class="container">
+        <p id='howTo'> 
+            View the map below for rendered coordinate annotations.  Pan and zoom are supported. Supplying direct coordinates is available below the map.
+            [Shift] + [Z] will zoom out for a holistic view.  
+            Click the colored buttons below the map to filter rendered annotations by the application named on the button.  
+            The 'IIIFy' button will filter by annotations that target a IIIF data resource.  
+            Clicking any dot on the map will show applicable information about the target when the URI is resolvable.
+        </p>
+        <div id="leafletInstanceContainer"></div>
+        <div class="col">
+            <div class="row">
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color1" value="Demo" app="MapDemo" onclick="leafy.demo.filterMarkers(event)"/>
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color2" value="Lived Religion" app="Lived_Religion" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color3" value="T-PEN"  app="T-PEN" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color4" value="Mirador" app="Mirador" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color5" value="IIIF App" app="IIIF_Coordinates_Annotator" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target IIIF resources." type="button" class="tag is-small color6" value="IIIFy" app="isIIIF" onclick="leafy.demo.filterMarkers(event)" />
+            </div>
+        </div>
+        
         <div class="card">
-            <header>Supply a latitude and longitude to fly to.  If you added a point near the supplied coordinates, you will see it on the map.</header>
+            <header>Supply a latitude and longitude to fly to.  Last Supplied Coordinates <span id="currentCoords">[12,12]</span></header>
             <div class="card_body">
                 <div class="grouped">
                     <label>Latitude</label><input id="leafLat" type="number" />
@@ -80,22 +112,9 @@ and open the template in the editor.
                 </div>
             </div>
             <footer>
-                <input value="Go To Coordinates" type="button" class="tag is-small" onclick="leafy.demo.goToCoords(event)"/>
+                <input id='goToCoords' value="Go To Coordinates" type="button" class="tag is-small" onclick="leafy.demo.goToCoords(event)"/>
                 <!--<input value="Refresh Markers" type="button" class="tag is-small" onclick="leafy.demo.refreshMarkers(event)"/>--> 
             </footer>
-        </div>
-        <br><br>
-        <p> Last Supplied Coordinates <span id="currentCoords">[12,12]</span> </p>
-        <div id="leafletInstanceContainer"></div>
-        <div class="col">
-            <div class="row">
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color1" value="Demo" app="MapDemo" onclick="leafy.demo.filterMarkers(event)"/>
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color2" value="Lived Religion" app="Lived_Religion" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color3" value="T-PEN"  app="T-PEN" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color4" value="Mirador" app="Mirador" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target this applications data" type="button" class="tag is-small color5" value="IIIF App" app="IIIF_Coordinates_Annotator" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target IIIF resources." type="button" class="tag is-small color6" value="IIIFy" app="isIIIF" onclick="leafy.demo.filterMarkers(event)" />
-            </div>
         </div>
 
     </body>
@@ -239,7 +258,7 @@ and open the template in the editor.
             if(leafLat.value && leafLong.value){
                 let coords = [leafLat.value, leafLong.value]
                 leafy.mymap.flyTo(coords,8)
-                document.getElementById("currentCoords").innerHTML = coords.toString()
+                document.getElementById("currentCoords").innerHTML = "["+coords.toString()+"]"
             }
         }
         
