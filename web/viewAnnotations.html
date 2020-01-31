@@ -180,10 +180,11 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown", "madeByApp" : "MapDemo", "isIIIF":false}
+                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "madeByApp" : "MapDemo", "isIIIF":false}
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
+                    targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
                         .then(resp => resp.json())
                         .catch(err => {
@@ -238,9 +239,11 @@ and open the template in the editor.
             })
             .then(async function(annotations) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown", "madeByApp" : "Lived_Religion", "isIIIF":false}
+                
                 let isIIIF = false
                 let allGeos = await annotations.map(async function(annotation){ 
+                    let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Lived_Religion", "isIIIF":false}
+                    targetProps.targetID = annotation.target
                     let targetObj = await fetch(annotation.target)
                         .then(resp => resp.json())
                         .catch(err => {return null})
@@ -296,10 +299,11 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown", "madeByApp" : "T-PEN", "isIIIF":false}
+                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "T-PEN", "isIIIF":false}
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
+                    targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
                         .then(resp => resp.json())
                         .catch(err => {return null})
@@ -353,10 +357,11 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown", "madeByApp" : "Mirador", "isIIIF":false}
+                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Mirador", "isIIIF":false}
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
+                    targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
                         .then(resp => resp.json())
                         .catch(err => {return null})
@@ -411,10 +416,11 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"Target Identifier Unknown", "madeByApp" : "IIIF_Coordinates_Annotator", "isIIIF":false}
+                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "IIIF_Coordinates_Annotator", "isIIIF":false}
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
+                    targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
                         .then(resp => resp.json())
                         .catch(err => {return null})
