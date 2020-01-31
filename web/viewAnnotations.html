@@ -54,7 +54,7 @@ and open the template in the editor.
             }
             
             .featureInfo{
-                margin: 8px 0px;
+                margin: 4px 0px;
                 font-family: monospace;
             }
             
@@ -141,6 +141,7 @@ and open the template in the editor.
             .then(response => response.json())
             .then(geoMarkers => {
                return geoMarkers.map(anno => { 
+                   anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
                    return anno.body
                 })
             })
@@ -162,6 +163,7 @@ and open the template in the editor.
             .then(response => response.json())
             .then(geoMarkers => {
                return geoMarkers.filter(anno => {
+                   anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
                    return anno.body.geometry.hasOwnProperty("value") && Object.keys(anno.body.geometry.value).length > 0
                })
             })
@@ -210,7 +212,10 @@ and open the template in the editor.
             })
             .then(response => response.json())
             .then(geoMarkers => {
-               return geoMarkers.map(anno => { return anno.body })
+               return geoMarkers.map(anno => { 
+                   anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
+                   return anno.body
+                })
             })
             .catch(err => {return []})
             
@@ -227,7 +232,10 @@ and open the template in the editor.
             })
             .then(response => response.json())
             .then(geoMarkers => {
-               return geoMarkers.map(anno => { return anno.body })
+               return geoMarkers.map(anno => { 
+                   anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
+                   return anno.body
+                })
             })
             .catch(err => {return []})
            
@@ -244,7 +252,10 @@ and open the template in the editor.
             })
             .then(response => response.json())
             .then(geoMarkers => {
-               return geoMarkers.map(anno => { return anno.body })
+               return geoMarkers.map(anno => { 
+                   anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
+                   return anno.body
+                })
             })
             .catch(err => {return []})
             
