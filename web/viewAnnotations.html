@@ -114,7 +114,7 @@ and open the template in the editor.
     <body class="container">
         <p id='howTo'> 
             View the map below for rendered coordinate annotations.  Pan and zoom are supported. Supplying direct coordinates is available below the map.
-            [Shift] + [Z] will zoom out for a holistic view.  
+            <a onclick="leafy.mymap.flyTo([12,12],2)">[Shift] + [Z]</a> will zoom out for a holistic view.  
             Click the colored buttons below the map to filter rendered annotations by the application named on the button.  
             The 'IIIFy' button will filter by annotations that target a IIIF data resource.  
             Clicking any dot on the map will show applicable information about the target when the URI is resolvable.
@@ -180,10 +180,11 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "madeByApp" : "MapDemo", "isIIIF":false}
+                
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
+                    let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "madeByApp" : "MapDemo", "isIIIF":false}
                     targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
                         .then(resp => resp.json())
@@ -299,10 +300,10 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "T-PEN", "isIIIF":false}
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
+                    let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "T-PEN", "isIIIF":false}
                     targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
                         .then(resp => resp.json())
@@ -357,9 +358,9 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Mirador", "isIIIF":false}
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
+                    let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Mirador", "isIIIF":false}
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
                     targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
@@ -416,9 +417,9 @@ and open the template in the editor.
             })
             .then(async function(geos) {
                 let targetObjDescription, targetObjLabel = ""
-                let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "IIIF_Coordinates_Annotator", "isIIIF":false}
                 let isIIIF = false
                 let allGeos = await geos.map(async function(geoJSON){ 
+                    let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "IIIF_Coordinates_Annotator", "isIIIF":false}
                     let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
                     targetProps.targetID = targetURI
                     let targetObj = await fetch(targetURI)
