@@ -12,6 +12,7 @@ and open the template in the editor.
         <link rel="stylesheet" href="https://unpkg.com/chota@latest">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
         <script src="js/leafletHelper.js"></script>
+        <script src="js/demo.js"></script>
         <style>
             #leafletPreview {
                 height: 40rem;
@@ -68,28 +69,8 @@ and open the template in the editor.
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(previewMap);
             var osmb = new OSMBuildings(previewMap).load('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json')
-            
-            function updateGeometry(event, clickedLat, clickedLong) {
-                event.preventDefault()
-                if (clickedLong > -180) {
-                    leafLat.value = parseInt(clickedLat * 1000000) / 1000000
-                    leafLong.value = parseInt(clickedLong * 1000000) / 1000000
-                }
-                let geometryInput = document.querySelector("input[deer-key='geometry']")
-                let lat = parseInt(leafLat.value * 1000000) / 1000000
-                let long = parseInt(leafLong.value * 1000000) / 1000000
-                if (lat && long) {
-                    previewMap.setView([lat, long], 18)
-                    let geometry = {
-                        type: "Point",
-                        coordinates: [long, lat]
-                    }
-                    geometryInput.value = JSON.stringify(geometry)
-                    geo = geometry
-                }
-            }
-            leafLat.oninput = updateGeometry
-            leafLong.oninput = updateGeometry
+            leafLat.oninput = DEMO.updateGeometry
+            leafLong.oninput = DEMO.updateGeometry
             previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
         </script>
         
@@ -100,86 +81,21 @@ and open the template in the editor.
                 <div id="annoPreview"> </div>
             </div>
             <footer>
-                <input type="button" class="button primary" value="Create Annotation" onclick="submitAnno(event)" />
-                <input type="button" class="button Primary" value="Restart" onclick="restart()" />
+                <input type="button" class="button primary" value="Create Annotation" app="MapDemo" onclick="DEMO.submitAnno(event, 'MapDemo')" />
+                <input type="button" class="button Primary" value="Restart" onclick="DEMO.restart()" />
             </footer>
         </div>
     </body>
     <script>
-        let geo = {
-            "type": "Point",
-            "coordinates": [] //let latlang = [38.6360699, -90.2348349] SLU
-        }
-        //let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"", "madeByApp" : "MapDemo", "isIIIF":false}      
-        let targetProps = {}
-        
-        async function submitAnno(event){
-            let geoJSON = {
-                "properties":targetProps,
-                "geometry": geo,
-                "type": "Feature"
-            }
-            let demoAnno = 
-            {
-                "type":"Annotation",
-                "@context":"http://www.w3.org/ns/anno.jsonld",
-                "target":targetProps["@id"],   
-                "body":geoJSON,
-                "madeByUser" : "BryGuy",
-                "madeByApp"  : "MapDemo"
-            }
 
-            let createdObj = await fetch(leafy.URLS.CREATE, {
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify(demoAnno)
-            })
-            .then(response => response.json())
-            .then(newObj => {
-                alert("A coordinate annotation was created that targets "+targetProps["@id"]+".  The Annotation URI is "+newObj.new_obj_state["@id"])
-                return newObj.new_obj_state
-            })
-            .catch(err => {
-                alert("There was problem creating your annotation.  The form will reset.  Please try again.")
-            })
-            document.location.reload()
-        }
+        /*
+         * Below are custom UI things for just this page functionality
+         */
         
-        async function getTargetProperties(event){
-            targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":false}
-            let target = document.getElementById('objURI').value
-            targetProps["@id"] = target
-            let targetObjDescription = "Target Description Unknown"
-            let targetObjLabel = "Target Label Unknown"
-            let isIIIF = false
-            let targetObj = await fetch(target)
-                .then(resp => resp.json())
-                .catch(err => {return null})
-            if(targetObj){
-                if(targetObj["@context"]){
-                    if(Array.isArray(targetObj["@context"])){
-                        isIIIF = targetObj["@context"].includes("http://iiif.io/api/presentation/3/context.json") || targetObj["@context"].includes("http://iiif.io/api/presentation/2/context.json")
-                    }
-                    else if(typeof targetObj["@context"] === "string"){
-                       isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json" 
-                    }
-
-                }
-                targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
-                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"MapDemo", "isIIIF":isIIIF}
-                delete targetObj["__rerum"]
-                URIpreview.innerHTML=`<pre>${JSON.stringify(targetObj,null,'\t')}</pre>`
-            }
-            else{
-                alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.  Supply a different URI to try again.")
-                URIpreview.innerHTML=`<pre>{404}</pre>`
-                targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "@id":"", "isIIIF":false}
-            }
-            confirmURI.classList.remove("is-hidden")
-            return targetProps
-        } 
         
+        /**
+         * Get a URI from the UI and check if it is resolvable.  Provide feedback
+         */
         async function provideTargetID(event){
             let target = document.getElementById('objURI').value
             targetProps["@id"] = target
@@ -197,10 +113,11 @@ and open the template in the editor.
             return targetProps
         }
         
+        /**
+         * Given all the information to create an annotation, offer the preview of it in the UI before submission.
+         */
         function previewAnnotation(event){
             if(leafLat.value && leafLong.value){
-//                coordinatesCard.style.visibility = "hidden"
-                //coordinatesCard.classList.add("is-hidden")
                 let targetURL = document.getElementById('objURI').value
                 let geoJSON = {
                     "properties":targetProps,
@@ -224,12 +141,21 @@ and open the template in the editor.
             }
         }
         
+        /**
+         * Trigger the part of the UI after the user has confirmed their targer
+         * @param {type} event
+         * @return {undefined}
+         */
         function confirmTarget(event){
             supplyURI.classList.add("is-hidden")
             confirmURI.classList.add("is-hidden")
             coordinatesCard.style.visibility = "visible"
         }
         
+        /**
+         * Do not submnit the annotation and start over.  The UI needs to be reset.  
+         * @return {undefined}
+         */
         function restart(){
             annoPreview.innerHTML = ""
             URIpreview.innerHTML = ""
