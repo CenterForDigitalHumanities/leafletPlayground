@@ -492,7 +492,6 @@ DEMO.submitAnno = async function(event, app){
         "geometry": geo,
         "type": "Feature"
     }
-    let app = "myapp"
     let targetURL = document.getElementById('objURI').value
     if(targetURL){
         let demoAnno = 
