@@ -69,8 +69,16 @@ and open the template in the editor.
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(previewMap);
             var osmb = new OSMBuildings(previewMap).load('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json')
-            leafLat.oninput = DEMO.updateGeometry
-            leafLong.oninput = DEMO.updateGeometry
+            leafLat.oninput = updateGeometry
+            leafLong.oninput = updateGeometry
+            function updateGeometry(event, clickedLat, clickedLong) {
+                event.preventDefault()
+                let lat = parseInt(leafLat.value * 1000000) / 1000000
+                let long = parseInt(leafLong.value * 1000000) / 1000000
+                if (lat && long) {
+                    previewMap.setView([lat, long], 16)
+                }
+            }
             previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
         </script>
         
@@ -98,7 +106,6 @@ and open the template in the editor.
          */
         async function provideTargetID(event){
             let target = document.getElementById('objURI').value
-            targetProps["@id"] = target
             let targetObj = await fetch(target)
                 .then(resp => resp.json())
                 .catch(err => {
@@ -110,17 +117,29 @@ and open the template in the editor.
                 URIpreview.innerHTML=`<pre>${JSON.stringify(targetObj,null,'\t')}</pre>`
             }
             confirmURI.classList.remove("is-hidden")
-            return targetProps
         }
         
         /**
          * Given all the information to create an annotation, offer the preview of it in the UI before submission.
          */
         function previewAnnotation(event){
+            let geo = {}
+            let lat = parseInt(leafLat.value * 1000000) / 1000000
+            let long = parseInt(leafLong.value * 1000000) / 1000000
+            if (lat && long) {
+                geo = {
+                    type: "Point",
+                    coordinates: [long, lat]
+                }
+            }
+            else{
+                alert("Supply both a latitude and a longitude")
+                return false
+            }
             if(leafLat.value && leafLong.value){
                 let targetURL = document.getElementById('objURI').value
                 let geoJSON = {
-                    "properties":targetProps,
+                    "properties":{},
                     "geometry": geo,
                     "type": "Feature"
                 }
@@ -128,7 +147,7 @@ and open the template in the editor.
                     {
                         "type":"Annotation",
                         "@context":"http://www.w3.org/ns/anno.jsonld",
-                        "target":targetProps["@id"],   
+                        "target":targetURL,   
                         "body":geoJSON,
                         "madeByUser" : "BryGuy",
                         "madeByApp"  : "MapDemo"

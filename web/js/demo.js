@@ -421,20 +421,6 @@ DEMO.filterMarkers = async function(event){
         }
     })
 }
-
-DEMO.updateGeometry = function(event, clickedLat, clickedLong) {
-    event.preventDefault()
-    let lat = parseInt(leafLat.value * 1000000) / 1000000
-    let long = parseInt(leafLong.value * 1000000) / 1000000
-    if (lat && long) {
-        let geometry = {
-            type: "Point",
-            coordinates: [long, lat]
-        }
-        geo = geometry
-        return geo
-    }
-}
                       
 DEMO.getTargetProperties = async function(event){
     targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":false}
@@ -525,8 +511,8 @@ DEMO.submitAnno = async function(event, app){
  * @param {type} obj
  * @return {Boolean}
  */
-DEMO.checkForIIIF = function(obj){
-    if(obj["@context"]){
+DEMO.checkForIIIF = function(targetObj){
+    if(targetObj["@context"]){
         if(Array.isArray(targetObj["@context"])){
             return targetObj["@context"].includes("http://iiif.io/api/presentation/3/context.json") || targetObj["@context"].includes("http://iiif.io/api/presentation/2/context.json")
         }

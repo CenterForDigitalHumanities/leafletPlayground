@@ -14,6 +14,7 @@ and open the template in the editor.
         <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
         <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js"></script>
         <script src="js/leafletHelper.js"></script>  
+        <script src="js/demo.js"></script>  
         <style>
            #leafletInstanceContainer { 
                height: 44em;
@@ -122,12 +123,12 @@ and open the template in the editor.
         <div id="leafletInstanceContainer"><div id="loadingMessage" style="text-align: center;">Gathering Resource Data From Around The World...</div></div>
         <div class="col">
             <div class="row">
-                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color1" value="Demo" app="MapDemo" onclick="leafy.demo.filterMarkers(event)"/>
-                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color2" value="Lived Religion" app="Lived_Religion" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color3" value="T-PEN"  app="T-PEN" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color4" value="Mirador" app="Mirador" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color5" value="IIIF App" app="IIIF_Coordinates_Annotator" onclick="leafy.demo.filterMarkers(event)" />
-                <input title="Toggle annotations that target IIIF resources." type="button" class="tag is-small color6" value="IIIFy" app="isIIIF" onclick="leafy.demo.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color1" value="Demo" app="MapDemo" onclick="DEMO.filterMarkers(event)"/>
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color2" value="Lived Religion" app="Lived_Religion" onclick="DEMO.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color3" value="T-PEN"  app="T-PEN" onclick="DEMO.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color4" value="Mirador" app="Mirador" onclick="DEMO.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color5" value="IIIF App" app="IIIF_Coordinates_Annotator" onclick="DEMO.filterMarkers(event)" />
+                <input title="Toggle annotations that target IIIF resources." type="button" class="tag is-small color6" value="IIIFy" app="isIIIF" onclick="DEMO.filterMarkers(event)" />
             </div>
         </div>
         
@@ -140,8 +141,8 @@ and open the template in the editor.
                 </div>
             </div>
             <footer>
-                <input id='goToCoords' value="Go To Coordinates" type="button" class="tag is-small" onclick="leafy.demo.goToCoords(event)"/>
-                <!--<input value="Refresh Markers" type="button" class="tag is-small" onclick="leafy.demo.refreshMarkers(event)"/>--> 
+                <input id='goToCoords' value="Go To Coordinates" type="button" class="tag is-small" onclick="DEMO.goToCoords(event)"/>
+                <!--<input value="Refresh Markers" type="button" class="tag is-small" onclick="DEMO.refreshMarkers(event)"/>--> 
             </footer>
         </div>
 
