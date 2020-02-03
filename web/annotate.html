@@ -11,6 +11,8 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://unpkg.com/chota@latest">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
+        <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js"></script>
         <script src="js/leafletHelper.js"></script>
         <script src="js/demo.js"></script>
         <style>
@@ -43,8 +45,7 @@ and open the template in the editor.
                 <input type="button" class="button primary" value="Confirm URI" onclick="confirmTarget(event)"/>
             </footer>
         </div>
-        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
-        <script src="https://cdn.osmbuildings.org/classic/0.2.2b/OSMBuildings-Leaflet.js"></script>
+
         <!-- Get the Lat and Long, allow them to use Leaflet to provide, use Leaflet to preview and confirm -->      
         <div id="coordinatesCard" style="visibility:hidden;" class="card notfirst">
             <header title="Use the map below to pan around.  Click to be given the option to use coordinates, or enter coordinates manually.">Map Information</header>
@@ -63,6 +64,10 @@ and open the template in the editor.
             </footer>
         </div>
         <script>
+            /**
+             * Generate a map for a user to select coordinates on.  Have it update and Lat and Long are provided.
+             * @type type
+             */
             var previewMap = L.map('leafletPreview').setView([38.628009, -90.201101], 16)
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -81,8 +86,7 @@ and open the template in the editor.
             }
             previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
         </script>
-        
-        <!--Show the Annotation.ither restart or send off to view   -->
+
         <div id="createAnnotation" class="card is-hidden notfirst">
             <header>See your new anno and decide what to do</header>
             <div class="card_body">
@@ -90,7 +94,7 @@ and open the template in the editor.
             </div>
             <footer>
                 <input type="button" class="button primary" value="Create Annotation" app="MapDemo" onclick="DEMO.submitAnno(event, 'MapDemo')" />
-                <input type="button" class="button Primary" value="Restart" onclick="DEMO.restart()" />
+                <input type="button" class="button Primary" value="Restart" onclick="restart()" />
             </footer>
         </div>
     </body>
