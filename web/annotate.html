@@ -83,6 +83,8 @@ and open the template in the editor.
                 if (lat && long) {
                     previewMap.setView([lat, long], 16)
                 }
+                leafLat.value = lat
+                leafLong.value = long
             }
             previewMap.on('click', e => L.popup().setLatLng(e.latlng).setContent(`<div>${e.latlng.toString()}<br><button class="tag is-small text-primary bd-primary" onclick="updateGeometry(event,${e.latlng.lat},${e.latlng.lng});">Use These</button></div>`).openOn(previewMap))
         </script>
