@@ -115,7 +115,7 @@ and open the template in the editor.
     <body class="container">
         <p id='howTo'> 
             View the map below for rendered coordinate annotations.  Pan and zoom are supported. Supplying direct coordinates is available below the map.
-            <a onclick="leafy.mymap.flyTo([12,12],2)">[Shift] + [Z]</a> will zoom out for a holistic view.  
+            <a onclick="DEMO.mymap.flyTo([12,12],2)">[Shift] + [Z]</a> will zoom out for a holistic view.  
             Click the colored buttons below the map to filter rendered annotations by the application named on the button.  
             The 'IIIFy' button will filter by annotations that target a IIIF data resource.  
             Clicking any dot on the map will show applicable information about the target when the URI is resolvable.
@@ -170,7 +170,7 @@ and open the template in the editor.
                 switch (key) {
                   case 90: 
                       //Shift + Z will do the zoom out behavior
-                      leafy.mymap.flyTo([12,12],2)
+                      DEMO.mymap.flyTo([12,12],2)
                     break
                   default:
                 }
