@@ -78,8 +78,8 @@ and open the template in the editor.
             leafLong.oninput = updateGeometry
             function updateGeometry(event, clickedLat, clickedLong) {
                 event.preventDefault()
-                let lat = parseInt(leafLat.value * 1000000) / 1000000
-                let long = parseInt(leafLong.value * 1000000) / 1000000
+                let lat = parseInt(clickedLat * 1000000) / 1000000
+                let long = parseInt(clickedLong.value * 1000000) / 1000000
                 if (lat && long) {
                     previewMap.setView([lat, long], 16)
                 }
