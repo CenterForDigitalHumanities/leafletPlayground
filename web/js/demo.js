@@ -57,6 +57,8 @@ DEMO.init =  async function(){
             targetProps.targetID = targetURI
             if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
                 targetProps = geoJSON.properties
+                targetProps.madeByApp = "MapDemo"
+                targetProps.targetID = targetURI
             }
             else{
                let targetObj = await fetch(targetURI)
@@ -110,18 +112,25 @@ DEMO.init =  async function(){
         let allGeos = await annotations.map(async function(annotation){ 
             let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Lived_Religion", "isIIIF":false}
             targetProps.targetID = annotation.target
-            let targetObj = await fetch(annotation.target)
-                .then(resp => resp.json())
-                .catch(err => {return null})
-            if(targetObj){
-                //This application created its annotations aa bit differently, so we have to shim the output here.  
-                isIIIF = DEMO.checkForIIIF(targetObj)
-                targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
-                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                targetProps = {"targetID":annotation.target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Lived_Religion", "isIIIF":isIIIF}
+            if(annotation.body.hasOwnProperty("properties") && (annotation.body.properties.label || annotation.body.properties.description) ){
+                targetProps = annotation.properties
+                targetProps.madeByApp = "Lived_Religion"
+                targetProps.targetID = annotation.target
             }
             else{
-                //alert("Target URI could not be resolved.  The annotationtation will still be created and target the URI provided, but certain information will be unknown.")
+                let targetObj = await fetch(annotation.target)
+                .then(resp => resp.json())
+                .catch(err => {return null})
+                if(targetObj){
+                    //This application created its annotations aa bit differently, so we have to shim the output here.  
+                    isIIIF = DEMO.checkForIIIF(targetObj)
+                    targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
+                    targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
+                    targetProps = {"targetID":annotation.target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Lived_Religion", "isIIIF":isIIIF}
+                }
+                else{
+                    //alert("Target URI could not be resolved.  The annotationtation will still be created and target the URI provided, but certain information will be unknown.")
+                }
             }
             return {"@id":annotation["@id"], "properties":targetProps, "type":"Feature", "geometry":annotation.body.geometry.value} 
         })
@@ -162,17 +171,24 @@ DEMO.init =  async function(){
             let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
             let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "T-PEN", "isIIIF":false}
             targetProps.targetID = targetURI
-            let targetObj = await fetch(targetURI)
-                .then(resp => resp.json())
-                .catch(err => {return null})
-            if(targetObj){
-                isIIIF = DEMO.checkForIIIF(targetObj)
-                targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
-                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"T-PEN", "isIIIF":isIIIF}
+            if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
+                targetProps = geoJSON.properties
+                targetProps.madeByApp = "T-PEN"
+                targetProps.targetID = targetURI
             }
             else{
-                //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                let targetObj = await fetch(targetURI)
+                .then(resp => resp.json())
+                .catch(err => {return null})
+                if(targetObj){
+                    isIIIF = DEMO.checkForIIIF(targetObj)
+                    targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
+                    targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
+                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"T-PEN", "isIIIF":isIIIF}
+                }
+                else{
+                    //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                }
             }
             return {"@id":geoJSON["@id"],"properties":targetProps, "type":"Feature", "geometry":geoJSON.geometry} 
         })
@@ -213,17 +229,24 @@ DEMO.init =  async function(){
             let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Mirador", "isIIIF":false}
             let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
             targetProps.targetID = targetURI
-            let targetObj = await fetch(targetURI)
-                .then(resp => resp.json())
-                .catch(err => {return null})
-            if(targetObj){
-                isIIIF = DEMO.checkForIIIF(targetObj)
-                targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
-                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Mirador", "isIIIF":isIIIF}
+            if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
+                targetProps = geoJSON.properties
+                targetProps.madeByApp = "Mirador"
+                targetProps.targetID = targetURI
             }
             else{
-                //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                let targetObj = await fetch(targetURI)
+                .then(resp => resp.json())
+                .catch(err => {return null})
+                if(targetObj){
+                    isIIIF = DEMO.checkForIIIF(targetObj)
+                    targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
+                    targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
+                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Mirador", "isIIIF":isIIIF}
+                }
+                else{
+                    //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                }
             }
             return {"@id":geoJSON["@id"], "properties":targetProps, "type":"Feature", "geometry":geoJSON.geometry} 
         })
@@ -264,17 +287,24 @@ DEMO.init =  async function(){
             let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "IIIF_Coordinates_Annotator", "isIIIF":false}
             let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
             targetProps.targetID = targetURI
-            let targetObj = await fetch(targetURI)
-                .then(resp => resp.json())
-                .catch(err => {return null})
-            if(targetObj){
-                isIIIF = DEMO.checkForIIIF(targetObj)
-                targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
-                targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":isIIIF}
+            if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
+                targetProps = geoJSON.properties
+                targetProps.madeByApp = "IIIF_Coordinates_Annotator"
+                targetProps.targetID = targetURI
             }
             else{
-                //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                let targetObj = await fetch(targetURI)
+                .then(resp => resp.json())
+                .catch(err => {return null})
+                if(targetObj){
+                    isIIIF = DEMO.checkForIIIF(targetObj)
+                    targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
+                    targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
+                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":isIIIF}
+                }
+                else{
+                    //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+                }
             }
             return {"@id":geoJSON["@id"],"properties":targetProps, "type":"Feature", "geometry":geoJSON.geometry} 
         })
