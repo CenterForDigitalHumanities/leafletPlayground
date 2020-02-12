@@ -484,6 +484,7 @@ DEMO.submitAnno = async function(event, app){
         {
             "type":"Annotation",
             "@context":"http://www.w3.org/ns/anno.jsonld",
+            "motivation":"geocode",
             "target":targetURL,   
             "body":geoJSON,
             "madeByUser" : "BryGuy",
