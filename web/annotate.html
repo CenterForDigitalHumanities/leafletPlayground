@@ -78,10 +78,10 @@ and open the template in the editor.
             leafLong.oninput = updateGeometry
             function updateGeometry(event, clickedLat, clickedLong) {
                 event.preventDefault()
-                let lat = clickedLat ? clickedLat: leafLat.value
-                lat = parseInt(lat * 1000000) / 1000000
-                let long = clickedLong ? clickedLong : leafLong.value
-                long = parseInt(clickedLong.value * 1000000) / 1000000
+                let lat = clickedLat ? clickedLat : event.target.value
+                lat = parseInt(clickedLat * 1000000) / 1000000
+                let long =  clickedLong ? clickedLong : event.target.value
+                long= parseInt(clickedLong.value * 1000000) / 1000000
                 if (lat && long) {
                     previewMap.setView([lat, long], 16)
                 }
@@ -147,6 +147,7 @@ and open the template in the editor.
             if(leafLat.value && leafLong.value){
                 let targetURL = document.getElementById('objURI').value
                 let geoJSON = {
+                    "@context": "http://geojson.org/geojson-ld/geojson-context.jsonld",
                     "properties":{},
                     "geometry": geo,
                     "type": "Feature",
