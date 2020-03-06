@@ -97,7 +97,7 @@ and open the template in the editor.
                 <div id="annoPreview"> </div>
             </div>
             <footer>
-                <input type="button" class="button primary" value="Create Annotation" app="MapDemo" onclick="DEMO.submitAnno(event, 'MapDemo')" />
+                <input type="button" class="button primary" value="Create Annotation" app="IIIF + Maps Annotation Demo" onclick="DEMO.submitAnno(event, 'IIIF + Maps Annotation Demo')" />
                 <input type="button" class="button Primary" value="Restart" onclick="restart()" />
             </footer>
         </div>
@@ -150,19 +150,18 @@ and open the template in the editor.
                     "@context": "http://geojson.org/geojson-ld/geojson-context.jsonld",
                     "properties":{},
                     "geometry": geo,
-                    "type": "Feature",
-                    "@context": "http://geojson.org/geojson-ld/geojson-context.jsonld"
+                    "type": "Feature"
                 }
                 let demoAnno = 
-                    {
-                        "type":"Annotation",
-                        "@context":"http://www.w3.org/ns/anno.jsonld",
-                        "target":targetURL,   
-                        "body":geoJSON,
-                        "motivation" : "geocode",
-                        "madeByUser" : "BryGuy",
-                        "madeByApp"  : "MapDemo"
-                    }
+                {
+                    "type":"Annotation",
+                    "@context":"http://iiif.io/api/presentation/3/context.json",
+                    "motivation":"geocode",
+                    "target":targetURL,   
+                    "body":geoJSON,
+                    "creator":"http://devstore.rerum.io/v1/id/5e628bd9e4b048b501c2666f",
+                    "__madeByApp" : "IIIF + Maps Annotation Demo"
+                }
                 createAnnotation.classList.remove("is-hidden")
                 annoPreview.innerHTML = `<pre>${JSON.stringify(demoAnno,null,'\t')}</pre>`
             }

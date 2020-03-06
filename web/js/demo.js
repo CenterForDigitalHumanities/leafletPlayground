@@ -28,8 +28,7 @@ DEMO.init =  async function(){
     //For my map demo app
     let mapDemoQueryObj = {
         "__rerum.history.next": historyWildcard,
-        "madeByUser" : "BryGuy",
-        "madeByApp"  : "MapDemo"
+        "__madeByApp"  : "IIIF + Maps Annotation Demo"
     }
     let mapDemoGeos = await fetch(DEMO.URLS.QUERY, {
         method: "POST",
@@ -38,13 +37,14 @@ DEMO.init =  async function(){
     })
     .then(response => response.json())
     .then(geoMarkers => {
-        return geoMarkers.map(anno => { 
+        return geoMarkers.map(anno => {
            anno.body["@id"] = anno["@id"] ? anno["@id"] : anno.id ? anno.id : ""
            //We assume the application that created these coordinates did not apply properties.  
            if(!anno.body.hasOwnProperty("properties")){
                anno.body.properties = {}
            }
            anno.body.properties.targetID = anno.target ? anno.target : ""
+           anno.body.properties.isUpdated = DEMO.checkForUpdated(anno)
            return anno.body
         })
     })
@@ -53,11 +53,11 @@ DEMO.init =  async function(){
         let isIIIF = false
         let allGeos = await geos.map(async function(geoJSON){ 
             let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
-            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "madeByApp" : "MapDemo", "isIIIF":false}
+            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown", "__madeByApp" : "IIIF + Maps Annotation Demo", "isIIIF":false, "isUpdated":geoJSON.properties.isUpdated}
             targetProps.targetID = targetURI
             if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
                 targetProps = geoJSON.properties
-                targetProps.madeByApp = "MapDemo"
+                targetProps["__madeByApp"] = "IIIF + Maps Annotation Demo"
                 targetProps.targetID = targetURI
             }
             else{
@@ -71,7 +71,7 @@ DEMO.init =  async function(){
                     isIIIF = DEMO.checkForIIIF(targetObj)
                     targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                     targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"MapDemo", "isIIIF":isIIIF}
+                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "__madeByApp":"IIIF + Maps Annotation Demo", "isIIIF":isIIIF, "isUpdated":geoJSON.properties.isUpdated}
                 }
                 else{
                     //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
@@ -110,12 +110,14 @@ DEMO.init =  async function(){
         let targetObjDescription, targetObjLabel = ""
         let isIIIF = false
         let allGeos = await annotations.map(async function(annotation){ 
-            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Lived_Religion", "isIIIF":false}
+            let isUpdated = DEMO.checkForUpdated(annotation)
+            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "__madeByApp" : "Lived_Religion", "isIIIF":false, "isUpdated":isUpdated}
             targetProps.targetID = annotation.target
             if(annotation.body.hasOwnProperty("properties") && (annotation.body.properties.label || annotation.body.properties.description) ){
                 targetProps = annotation.properties
-                targetProps.madeByApp = "Lived_Religion"
+                targetProps["__madeByApp"] = "Lived_Religion"
                 targetProps.targetID = annotation.target
+                targetProps.isUpdated = DEMO.checkForUpdated(annotation)
             }
             else{
                 let targetObj = await fetch(annotation.target)
@@ -126,7 +128,7 @@ DEMO.init =  async function(){
                     isIIIF = DEMO.checkForIIIF(targetObj)
                     targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                     targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                    targetProps = {"targetID":annotation.target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Lived_Religion", "isIIIF":isIIIF}
+                    targetProps = {"targetID":annotation.target, "label":targetObjLabel, "description":targetObjDescription, "__madeByApp":"Lived_Religion", "isIIIF":isIIIF, "isUpdated":isUpdated}
                 }
                 else{
                     //alert("Target URI could not be resolved.  The annotationtation will still be created and target the URI provided, but certain information will be unknown.")
@@ -144,8 +146,7 @@ DEMO.init =  async function(){
     //For fake app 1
     let mapDemoQueryObj2 = {
         "__rerum.history.next": historyWildcard,
-        "madeByUser" : "BryGuy",
-        "madeByApp"  : "T-PEN"
+        "__madeByApp"  : "T-PEN"
     }
     let mapDemoGeos_2 = await fetch(DEMO.URLS.QUERY, {
         method: "POST",
@@ -161,6 +162,7 @@ DEMO.init =  async function(){
                anno.body.properties = {}
            }
            anno.body.properties.targetID = anno.target ? anno.target : ""
+           anno.body.properties.isUpdated = DEMO.checkForUpdated(anno)
            return anno.body
         })
     })
@@ -169,11 +171,11 @@ DEMO.init =  async function(){
         let isIIIF = false
         let allGeos = await geos.map(async function(geoJSON){ 
             let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
-            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "T-PEN", "isIIIF":false}
+            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "__madeByApp" : "T-PEN", "isIIIF":false, "isUpdated":geoJSON.properties.isUpdated}
             targetProps.targetID = targetURI
             if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
                 targetProps = geoJSON.properties
-                targetProps.madeByApp = "T-PEN"
+                targetProps["__madeByApp"] = "T-PEN"
                 targetProps.targetID = targetURI
             }
             else{
@@ -184,7 +186,7 @@ DEMO.init =  async function(){
                     isIIIF = DEMO.checkForIIIF(targetObj)
                     targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                     targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"T-PEN", "isIIIF":isIIIF}
+                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "__madeByApp":"T-PEN", "isIIIF":isIIIF, "isUpdated":geoJSON.properties.isUpdated}
                 }
                 else{
                     //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
@@ -202,8 +204,7 @@ DEMO.init =  async function(){
     //For Fake App 2
     let mapDemoQueryObj3 = {
         "__rerum.history.next": historyWildcard,
-        "madeByUser" : "BryGuy",
-        "madeByApp"  : "Mirador"
+        "__madeByApp"  : "Mirador"
     }
     let mapDemoGeos_3 = await fetch(DEMO.URLS.QUERY, {
         method: "POST",
@@ -219,6 +220,7 @@ DEMO.init =  async function(){
                anno.body.properties = {}
            }
            anno.body.properties.targetID = anno.target ? anno.target : ""
+           anno.body.properties.isUpdated = DEMO.checkForUpdated(anno)
            return anno.body
         })
     })
@@ -226,12 +228,12 @@ DEMO.init =  async function(){
         let targetObjDescription, targetObjLabel = ""
         let isIIIF = false
         let allGeos = await geos.map(async function(geoJSON){ 
-            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "Mirador", "isIIIF":false}
+            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "__madeByApp" : "Mirador", "isIIIF":false, "isUpdated":geoJSON.properties.isUpdated}
             let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
             targetProps.targetID = targetURI
             if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
                 targetProps = geoJSON.properties
-                targetProps.madeByApp = "Mirador"
+                targetProps["__madeByApp"] = "Mirador"
                 targetProps.targetID = targetURI
             }
             else{
@@ -242,7 +244,7 @@ DEMO.init =  async function(){
                     isIIIF = DEMO.checkForIIIF(targetObj)
                     targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                     targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"Mirador", "isIIIF":isIIIF}
+                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "__madeByApp":"Mirador", "isIIIF":isIIIF, "isUpdated":geoJSON.properties.isUpdated}
                 }
                 else{
                     //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
@@ -260,8 +262,7 @@ DEMO.init =  async function(){
     //For fake app 3
     let mapDemoQueryObj4 = {
         "__rerum.history.next": historyWildcard,
-        "madeByUser" : "BryGuy",
-        "madeByApp"  : "IIIF_Coordinates_Annotator"
+        "__madeByApp"  : "Universal Viewer"
     }
     let mapDemoGeos_4 = await fetch(DEMO.URLS.QUERY, {
         method: "POST",
@@ -277,6 +278,7 @@ DEMO.init =  async function(){
                anno.body.properties = {}
            }
            anno.body.properties.targetID = anno.target ? anno.target : ""
+           anno.body.properties.isUpdated = DEMO.checkForUpdated(anno)
            return anno.body
         })
     })
@@ -284,12 +286,12 @@ DEMO.init =  async function(){
         let targetObjDescription, targetObjLabel = ""
         let isIIIF = false
         let allGeos = await geos.map(async function(geoJSON){ 
-            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "madeByApp" : "IIIF_Coordinates_Annotator", "isIIIF":false}
+            let targetProps = {"label":"Target Label Unknown","description":"Target Description Unknown",  "__madeByApp" : "Universal Viewer", "isIIIF":false, "isUpdated":geoJSON.properties.isUpdated}
             let targetURI = geoJSON.properties["@id"] ? geoJSON.properties["@id"] : geoJSON.properties.targetID ? geoJSON.properties.targetID : ""
             targetProps.targetID = targetURI
             if(geoJSON.hasOwnProperty("properties") && (geoJSON.properties.label || geoJSON.properties.description) ){
                 targetProps = geoJSON.properties
-                targetProps.madeByApp = "IIIF_Coordinates_Annotator"
+                targetProps["__madeByApp"] = "Universal Viewer"
                 targetProps.targetID = targetURI
             }
             else{
@@ -300,7 +302,7 @@ DEMO.init =  async function(){
                     isIIIF = DEMO.checkForIIIF(targetObj)
                     targetObjDescription = targetObj.description ? targetObj.description : "Target Description Unknown"
                     targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Target Label Unknown"
-                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":isIIIF}
+                    targetProps = {"targetID":targetURI, "label":targetObjLabel, "description":targetObjDescription, "__madeByApp":"Universal Viewer", "isIIIF":isIIIF, "isUpdated":geoJSON.properties.isUpdated}
                 }
                 else{
                     //alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
@@ -332,9 +334,9 @@ DEMO.initializeMap = async function(coords, geoMarkers){
     L.geoJSON(geoMarkers, {
         pointToLayer: function (feature, latlng) {
             let appColor = "#336699"
-            let creating_app = feature.properties.madeByApp ? feature.properties.madeByApp : "Unknown"
+            let creating_app = feature.properties.__madeByApp ? feature.properties.__madeByApp : "Unknown"
             switch(creating_app){
-                case "MapDemo":
+                case "IIIF + Maps Annotation Demo":
                     appColor = "#336699"
                 break
                 case "Lived_Religion":
@@ -346,7 +348,7 @@ DEMO.initializeMap = async function(coords, geoMarkers){
                 case "Mirador":
                     appColor = "#ff3333"
                 break
-                case "IIIF_Coordinates_Annotator":
+                case "Universal Viewer":
                     appColor = "#800060"
                 break
                 default:
@@ -386,8 +388,8 @@ DEMO.pointEachFeature = function (feature, layer) {
         if(feature.properties.description) {
             popupContent += `<div class="featureInfo"><label> Target Description:</label>${feature.properties.description}</div>`
         }
-        if(feature.properties.madeByApp) {
-            popupContent += `<div class="featureInfo"><label>Annotation Generated By</label>${feature.properties.madeByApp}</div>`
+        if(feature.properties.__madeByApp) {
+            popupContent += `<div class="featureInfo"><label>Annotation Generated By</label>${feature.properties.__madeByApp}</div>`
         }
         if(feature["@id"]) {
             popupContent += `<div class="featureInfo"><label>Annotation URI:</label><a target='_blank' href='${feature["@id"]}'>See Annotation Data</a></div>`
@@ -409,20 +411,26 @@ DEMO.filterMarkers = async function(event){
     DEMO.mymap.eachLayer(function(layer) {
         let skipCheck = false
         if ( layer.hasMyPoints ) {
-            //remove [pomts nased pm a point.madeByApp property
+            //remove [pomts nased pm a point.__madeByApp property
             if(app === "isIIIF"){
                 //Special handler to toggle on this property existing instead of basing it on the creating app (any aapp could have target a IIIF resource).
                 if(layer.feature.properties && layer.feature.properties.isIIIF){
                     skipCheck = true
                 }
             }
-            if(skipCheck || (layer.feature.properties && layer.feature.properties.madeByApp && layer.feature.properties.madeByApp === app)){
+            if(app === "isUpdated"){
+                //Special handler to toggle on this property existing instead of basing it on the creating app (any aapp could have target a IIIF resource).
+                if(layer.feature.properties && layer.feature.properties.isUpdated){
+                    skipCheck = true
+                }
+            }
+            if(skipCheck || (layer.feature.properties && layer.feature.properties["__madeByApp"] && layer.feature.properties["__madeByApp"] === app)){
                 if(layer.isHiding){
                     layer.isHiding = false
-                    let creating_app = layer.feature.properties.madeByApp ? layer.feature.properties.madeByApp : "Unknown"
+                    let creating_app = layer.feature.properties["__madeByApp"] ? layer.feature.properties["__madeByApp"] : "Unknown"
                     let appColor = ""
                     switch(creating_app){
-                        case "MapDemo":
+                        case "IIIF + Maps Annotation Demo":
                             appColor = "#336699"
                         break
                         case "Lived_Religion":
@@ -434,7 +442,7 @@ DEMO.filterMarkers = async function(event){
                         case "Mirador":
                             appColor = "#ff3333"
                         break
-                        case "IIIF_Coordinates_Annotator":
+                        case "Universal Viewer":
                             appColor = "#800060"
                         break
                         default:
@@ -457,36 +465,37 @@ DEMO.filterMarkers = async function(event){
     })
 }
                       
-DEMO.getTargetProperties = async function(event){
-    targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "madeByApp":"IIIF_Coordinates_Annotator", "isIIIF":false}
-    let target = document.getElementById('objURI').value
-    let isIIIF = false
-    targetProps["@id"] = target
-    let targetObjDescription = "Unknown"
-    let targetObjLabel = "Unknown"
-    let targetObj = await fetch(target)
-        .then(resp => resp.json())
-        .catch(err => {return null})
-    if(targetObj){
-        if(targetObj["@context"]){
-            if(Array.isArray(targetObj["@context"])){
-                isIIIF = targetObj["@context"].includes("http://iiif.io/api/presentation/3/context.json") || targetObj["@context"].includes("http://iiif.io/api/presentation/2/context.json")
-            }
-            else if(typeof targetObj["@context"] === "string"){
-               isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json" 
-            }
-
-        }
-        targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
-        targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
-        targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription, "madeByApp":"T-PEN", "isIIIF":isIIIF}
-        return targetProps
-    }
-    else{
-        alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
-        return targetProps
-    }
-} 
+//DEMO.getTargetProperties = async function(event){
+//    targetProps = {"label":"Unknown","description":"Unknown", "@id":"", "__madeByApp":"Universal Viewer", "isIIIF":false, "isUpdated":false}
+//    let target = document.getElementById('objURI').value
+//    let isIIIF = false
+//    let isUpdated = false
+//    targetProps["@id"] = target
+//    let targetObjDescription = "Unknown"
+//    let targetObjLabel = "Unknown"
+//    let targetObj = await fetch(target)
+//        .then(resp => resp.json())
+//        .catch(err => {return null})
+//    if(targetObj){
+//        if(targetObj["@context"]){
+//            if(Array.isArray(targetObj["@context"])){
+//                isIIIF = targetObj["@context"].includes("http://iiif.io/api/presentation/3/context.json") || targetObj["@context"].includes("http://iiif.io/api/presentation/2/context.json")
+//            }
+//            else if(typeof targetObj["@context"] === "string"){
+//               isIIIF = targetObj["@context"] === "http://iiif.io/api/presentation/3/context.json" || targetObj["@context"] === "http://iiif.io/api/presentation/2/context.json" 
+//            }
+//
+//        }
+//        targetObjDescription = targetObj.description ? targetObj.description : "Unknown"
+//        targetObjLabel = targetObj.label ? targetObj.label : targetObj.name ? targetObj.name : "Unknown"
+//        targetProps = {"@id":target, "label":targetObjLabel, "description":targetObjDescription, "__madeByApp":"T-PEN", "isIIIF":isIIIF, "isUpdated":isUpdated}
+//        return targetProps
+//    }
+//    else{
+//        alert("Target URI could not be resolved.  The annotation will still be created and target the URI provided, but certain information will be unknown.")
+//        return targetProps
+//    }
+//} 
 
 /**
  * Connect with the RERUm API to create the Annotation Linked Open Data object.
@@ -517,15 +526,15 @@ DEMO.submitAnno = async function(event, app){
     let targetURL = document.getElementById('objURI').value
     if(targetURL){
         let demoAnno = 
-        {
-            "type":"Annotation",
-            "@context":"http://www.w3.org/ns/anno.jsonld",
-            "motivation":"geocode",
-            "target":targetURL,   
-            "body":geoJSON,
-            "madeByUser" : "BryGuy",
-            "madeByApp"  : app
-        }
+            {
+                "type":"Annotation",
+                "@context":"http://iiif.io/api/presentation/3/context.json",
+                "motivation":"geocode",
+                "target":targetURL,   
+                "body":geoJSON,
+                "creator":"http://devstore.rerum.io/v1/id/5e628bd9e4b048b501c2666f",
+                "__madeByApp":app
+            }
 
         let createdObj = await fetch(DEMO.URLS.CREATE, {
             method: "POST",
@@ -558,6 +567,16 @@ DEMO.checkForIIIF = function(targetObj){
         }
     }
     return false
+}
+
+/**
+ * Check if the given object is one since the standards update.  The providerfield was added and is always present.
+ * This is a cheap way to test. 
+ * @param {type} obj
+ * @return {Boolean}
+ */
+DEMO.checkForUpdated = function(obj){
+    return !(obj.hasOwnProperty("creator") && obj.creator === "http://devstore.rerum.io/v1/id/5e628bd9e4b048b501c2666f")
 }
 
 
