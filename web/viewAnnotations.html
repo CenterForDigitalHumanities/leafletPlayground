@@ -83,7 +83,7 @@ and open the template in the editor.
                 text-align:center;
             }
             
-            #howTo{
+            .howTo{
                 font-size: 10pt;
             }
             
@@ -113,22 +113,28 @@ and open the template in the editor.
     </head>
     
     <body class="container">
-        <p id='howTo'> 
-            View the map below for rendered coordinate annotations.  Pan and zoom are supported. Supplying direct coordinates is available below the map.
+        <p class="howTo" id='howTo'> 
+            View the map below for rendered IIIF geoassertion Annotations.  Pan and zoom are supported. Supplying direct coordinates is available below the map.
             <a onclick="DEMO.mymap.flyTo([12,12],2)">[Shift] + [Z]</a> will zoom out for a holistic view.  
             Click the colored buttons below the map to filter rendered annotations by the application named on the button.  
             The 'IIIFy' button will filter by annotations that target a IIIF data resource.  
             Clicking any dot on the map will show applicable information about the target when the URI is resolvable.
         </p>
+        <p class="howTo">
+            Many of these Annotations were created before the IIIF + Maps conference.  Since that date, new encoding standards have been implement in the publicly available demo.
+            Instead of altering or removing existing annotations, there is a filter below to toggle old data nodes.  Use the toggles together with the
+            others to see what you want.
+        </p>
         <div id="leafletInstanceContainer"><div id="loadingMessage" style="text-align: center;">Gathering Resource Data From Around The World...</div></div>
         <div class="col">
             <div class="row">
-                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color1" value="Demo" app="MapDemo" onclick="DEMO.filterMarkers(event)"/>
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color1" value="IIIF + Maps Annotation Demo" app="IIIF + Maps Annotation Demo" onclick="DEMO.filterMarkers(event)"/>
                 <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color2" value="Lived Religion" app="Lived_Religion" onclick="DEMO.filterMarkers(event)" />
                 <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color3" value="T-PEN"  app="T-PEN" onclick="DEMO.filterMarkers(event)" />
                 <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color4" value="Mirador" app="Mirador" onclick="DEMO.filterMarkers(event)" />
-                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color5" value="IIIF App" app="IIIF_Coordinates_Annotator" onclick="DEMO.filterMarkers(event)" />
-                <input title="Toggle annotations that target IIIF resources." type="button" class="tag is-small color6" value="IIIFy" app="isIIIF" onclick="DEMO.filterMarkers(event)" />
+                <input title="Toggle annotations that target this application's data" type="button" class="tag is-small color5" value="Universal Viewer" app="Universal Viewer" onclick="DEMO.filterMarkers(event)" />
+                <input title="Toggle annotations that target IIIF resources." type="button" class="tag is-small color6" value="IIIF Context" app="isIIIF" onclick="DEMO.filterMarkers(event)" />
+                <input title="Toggle annotations that were created after the standards update was applied." type="button" class="tag is-small color6" value="Updated" app="isUpdated" onclick="DEMO.filterMarkers(event)" />
             </div>
         </div>
         
