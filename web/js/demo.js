@@ -427,6 +427,8 @@ DEMO.filterMarkers = async function(event){
             if(skipCheck || (layer.feature.properties && layer.feature.properties["__madeByApp"] && layer.feature.properties["__madeByApp"] === app)){
                 if(layer.isHiding){
                     layer.isHiding = false
+                    layer.setRadius(8)
+                    layer.getPopup().addEventListener("click")
                     let creating_app = layer.feature.properties["__madeByApp"] ? layer.feature.properties["__madeByApp"] : "Unknown"
                     let appColor = ""
                     switch(creating_app){
@@ -455,6 +457,8 @@ DEMO.filterMarkers = async function(event){
                 }
                 else{
                     layer.isHiding = true 
+                    layer.setRadius(0)
+                    layer.getPopup().removeEventListener("click")
                     layer.setStyle({
                         color: 'rgba(0,0,0,0)',
                         fillColor : 'rgba(0,0,0,0)'
